@@ -1,0 +1,47 @@
+{
+  "name": "adminsystemserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "all": "nodemon ./index.js --exec babel-node -e js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/musicaga/Admin-System-Server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/musicaga/Admin-System-Server/issues"
+  },
+  "homepage": "https://github.com/musicaga/Admin-System-Server#readme",
+  "dependencies": {
+    "apollo-server-express": "^2.2.6",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-fileupload": "^1.0.0",
+    "express-graphql": "^0.7.1",
+    "fs": "0.0.1-security",
+    "graphql": "^14.0.2",
+    "graphql-import": "^0.7.1",
+    "graphql-tools": "^4.0.3",
+    "i18n": "^0.8.3",
+    "jsonwebtoken": "^8.3.0",
+    "moment": "^2.21.0",
+    "mongoose": "^5.0.9",
+    "mongoose-pagination": "^1.0.0",
+    "nodemailer": "^4.6.4",
+    "path": "^0.12.7",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.1",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1"
+  }
+}

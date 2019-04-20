@@ -1,0 +1,93 @@
+  type Admin {
+    id: ID
+    email: String
+    password: String
+    userName: String
+    firstName: String
+    lastName: String
+    createdAt: String
+    updatedAt: String
+    profileImage: ProfileImage
+  }
+  type ProfileImage {
+    fileName:String
+    url:String
+    directory:String
+  }
+  input AdminPagination {
+    page: Int,
+    itemsPerPage: Int,
+    sort: String 
+  }
+  type AdminResponse {
+    totalItems: Int
+    totalPages: Int
+    currentPage: Int
+    itemsPerPage: Int
+    data: [Admin]
+  }
+  type Query {
+    getAdmins(input: AdminPagination ) : AdminResponse
+  }
+
+  type Country {
+    id: ID
+    name: String
+    code: String
+    capital: String
+    language: String
+    createdAt: String
+    updatedAt: String
+    currency: String
+  }
+  type Query {
+    getCountries : [Country]
+  }
+
+  type Company {
+    id: ID
+    name: String
+    country: Country
+    logo: ProfileImage
+    createdAt: String
+    updatedAt: String
+    profileImage: ProfileImage
+    currency: String
+    admin: Admin
+  }
+  type Query {
+    getCompanies : [Company]
+  }
+
+  type Rol {
+    id: ID
+    name: String
+    company: Company
+    createdAt: String
+    updatedAt: String
+    features: [String]
+  }
+  type Query {
+    getRoles : [Rol]
+  }
+
+  type User {
+    id: ID
+    email: String
+    password: String
+    userName: String
+    firstName: String
+    lastName: String
+    createdAt: String
+    updatedAt: String
+    documentType: String
+    documentNumber: String
+    rol: Rol
+    company: Company
+    language: String
+    profileImage: ProfileImage
+    isActive: Boolean
+  }
+  type Query {
+    getUsers: [User]
+  }

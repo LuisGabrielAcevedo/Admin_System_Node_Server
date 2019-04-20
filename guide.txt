@@ -1,0 +1,18 @@
+SAVE REQUEST
+requiredFields: Campos obligatorios en la base de datos, deben ser los mismos que esta en required true en el modelo de mongoose.
+repeatedFields: Campos que no quiero que sean repetidos en la base de datos.
+requestData: req.body, Objeto que quiero guardar, generalmente es req.body que viene de front o postman pero tambien puede ser un objeto llenado por nosotros.
+collection: Coleccion en la que voy a guardar.
+successMessage: Mensaje de exito.
+errorMessage: Mensaje de error.
+
+GET 
+collection: Coleccion en la que voy a guardar.
+query: Query por la que quiero buscar.
+sort: Campos por el que quiero ordenar.
+page: Pagina que quiero traer.
+itemsPerPage: Items por pagina.
+unselectFields: Campos que no quiero que vengan en la data.
+populateFields: Campos que quiero popular, o traer la informacion completa.
+successMessage: Mensaje de exito.
+errorMessage: Mensaje de error.
