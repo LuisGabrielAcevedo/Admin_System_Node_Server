@@ -8,7 +8,7 @@ const config = {
             timeExpired: 60000
         },
         // urlApi: 'http://localhost:3500/api/v1/',
-        urlApi: 'https://adminsystemapi.herokuapp.com/api/v1/'
+        urlApi: 'https://adminsystemnodeserver.herokuapp.com/api/v1/'
     },
     dataBase: {
         name: 'Admin System Server'
