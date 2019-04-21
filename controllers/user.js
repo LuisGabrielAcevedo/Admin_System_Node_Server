@@ -101,7 +101,11 @@ async function findUser(req, res) {
     const payload = {
         id: req.params.id,
         collection: User,
-        unselectFields: ['__v', 'password']
+        unselectFields: ['__v', 'password'],
+        populateFields: [{
+            path: 'company',
+            select: { name: 1, _id: 1 }
+        }]
     }
     try {
         const resp = await dataBase.findCollectionId(payload);
