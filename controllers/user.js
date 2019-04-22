@@ -184,7 +184,11 @@ async function simpleSearch(req, res) {
             '__v', 'password', 'createdAt', 'updatedAt', 'deletedAt',
             'documentType', 'documentNumber', 'language', 'application'
         ],
-        sort: req.query.sort ? req.query.sort : 'createdAt'
+        sort: req.query.sort ? req.query.sort : 'createdAt',
+        populateFields: [{
+            path: 'company',
+            select: { name: 1, _id: 1 }
+        }]
     }
     try {
         const resp = await dataBase.simpleSearch(payload);
