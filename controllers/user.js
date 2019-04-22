@@ -102,10 +102,16 @@ async function findUser(req, res) {
         id: req.params.id,
         collection: User,
         unselectFields: ['__v', 'password'],
-        populateFields: [{
-            path: 'company',
-            select: { name: 1, _id: 1 }
-        }]
+        populateFields: [
+            {
+                path: 'company',
+                select: { name: 1, _id: 1 }
+            },
+            {
+                path: 'rol',
+                select: { name: 1, _id: 1 }
+            }
+        ]
     }
     try {
         const resp = await dataBase.findCollectionId(payload);
@@ -185,10 +191,16 @@ async function simpleSearch(req, res) {
             'documentType', 'documentNumber', 'language', 'application'
         ],
         sort: req.query.sort ? req.query.sort : 'createdAt',
-        populateFields: [{
-            path: 'company',
-            select: { name: 1, _id: 1 }
-        }]
+        populateFields: [
+            {
+                path: 'company',
+                select: { name: 1, _id: 1 }
+            },
+            {
+                path: 'rol',
+                select: { name: 1, _id: 1 }
+            }
+        ]
     }
     try {
         const resp = await dataBase.simpleSearch(payload);
