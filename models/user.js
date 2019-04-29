@@ -7,21 +7,18 @@ const UserSchema = Schema({
     userName: { type: String, default: null },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    createdAt: { type: String, default: null },
-    updatedAt: { type: String, default: null },
-    deletedAt: { type: String, default: null },
-    documentType: { type: String, default: null },
-    documentNumber: { type: String, default: null },
-    rol: { type: Schema.ObjectId, ref: 'Rol', default: null },
+    status: { type: String, default: null },
+    secret: { type: String, default: null },
+    token: { type: String, default: null },
+    isActive: { type: Boolean, default: true },
+    role: { type: Schema.ObjectId, ref: 'Role', default: null },
     company: { type: Schema.ObjectId, ref: 'Company', required: true },
     application: { type: Schema.ObjectId, ref: 'Application', required: true },
-    language: { type: String, default: null },
-    profileImage: {
-        fileName: { type: String, default: null },
-        url: { type: String, default: null },
-        directory: { type: String, default: null }
-    },
-    isActive: { type: Boolean, default: true }
+    userConfigurations: { type: Schema.ObjectId, ref: 'UserConfigurations', default: null },
+    profileImage: { type: Schema.ObjectId, ref: 'Image', required: true },
+    createdAt: { type: String, default: null },
+    updatedAt: { type: String, default: null },
+    deletedAt: { type: String, default: null }
 });
 
 module.exports = mongoose.model('User', UserSchema);
