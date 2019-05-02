@@ -1,6 +1,7 @@
 // Models
 const User = require('../models/user');
 const UserConfigurations = require('../models/userConfigurations');
+const UserInformation = require('../models/userInformation');
 // Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
 // Metodos para manejar archivos
@@ -17,10 +18,10 @@ const tokenExpired = config.server.token.timeExpired * 60;
 const secret = config.server.token.secret;
 // Libreria para crear tokens
 const jwt = require('jsonwebtoken');
-// Libreria para registrar fecha y hora
-const moment = require('moment');
 // Metodos de validacion
 const validation = require('../services/validation');
+// Metodos de usuario
+const userMethods = require('../services/user');
 
 
 // 0. Funcion de prueba del controlador
@@ -50,7 +51,7 @@ async function getUsers(req, res) {
             company: req.tokenVerified.company
         }
     }
-    
+
     const searchFields = ['email', 'lastName', 'firstName'];
 
     const query = req.query.search || req.query.filters ?
@@ -214,64 +215,35 @@ async function simpleSearch(req, res) {
 }
 
 // 8. Register user
-function userRegister(req, res) {
-    validation.body(User, req.body, 'POST')
-        .then(validationResp => {
-            let user = new User();
-            // 2. Asignar valores
-            for (let field in req.body) {
-                user[field] = req.body[field];
-            }
-            user['createdAt'] = moment().toISOString();
-            user['updatedAt'] = moment().toISOString();
-            // 3. Validar datos repetidos
-            User.find({}).or([{ email: user.email }]).exec((err, dataBaseResp) => {
-                if (err)
-                    return res.status(500).send({
-                        status: 'ERROR',
-                        code: 500,
-                        msg: 'data_base_error_repeated_fields'
-                    });
-                if (dataBaseResp && dataBaseResp.length >= 1)
-                    return res.status(404).send({
-                        status: 'WARNING',
-                        code: 422,
-                        msg: `the_user_already_exists`
-                    });
-                // 4. Encriptar contraseña 
-                bcrypt.hash(user.password, null, null, (err, hash) => {
-                    user.password = hash;
-                    // 5.
-                    dataBase.saveCollection({
-                        requestData: req.body,
-                        collection: UserConfigurations
-                    }).then(resp => {
-                        user.userConfigurations = resp.data._id;
-                        user.save((err, dataBaseResp1) => {
-                            if (err)
-                                return res.status(500).send({
-                                    status: 'ERROR',
-                                    code: 500,
-                                    msg: `save_${User.modelName.toLowerCase()}_error`,
-                                });
-                            dataBaseResp1.__v = undefined;
-                            return res.status(200).send({
-                                status: 'OK',
-                                code: 200,
-                                msg: `save_${User.modelName.toLowerCase()}_success`,
-                                data: dataBaseResp1
-                            });
-                        });
-                    })
-                    .catch(validationErrorResp1 => {
-                        return res.status(validationErrorResp1.code).send(validationErrorResp1);
-                    })
-                })
-            });
+async function userRegister(req, res) {
+    try {
+        // 1. Validate
+        await validation.body(User, req.body, 'POST');
+        // 2. Validate email repeated
+        const user = await userMethods.validateEmail(req.body.email);
+        // 3. Password
+        req.body.password = await userMethods.encryptPassword(req.body.password);
+        // 4. Save userConfigurations
+        const userConfigurations = await dataBase.saveCollection({
+            requestData: req.body,
+            collection: UserConfigurations
         })
-        .catch(validationErrorResp => {
-            return res.status(validationErrorResp.code).send(validationErrorResp);
-        })
+        // 5. Save userInformation
+        const userInformation = await dataBase.saveCollection({
+            requestData: req.body,
+            collection: UserInformation
+        });
+        req.body.userConfigurations = userConfigurations.data._id;
+        req.body.userInformation = userInformation.data._id;
+        // 6. Save User
+        const resp = await dataBase.saveCollection({
+            requestData: req.body,
+            collection: User
+        });
+        return res.status(resp.code).send(resp);
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
 }
 
 // 9. Login user
@@ -340,6 +312,8 @@ function userLogin(req, res) {
 
         })
 }
+
+
 
 
 

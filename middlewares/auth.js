@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const Rol = require('../models/rol');
+const Role = require('../models/rol');
 const Permission = require('../models/permission');
 
 const authMiddlewareFunctionSecondAction = (req, res, next) => {
@@ -39,7 +39,7 @@ const authMiddleware = async (req, res, next, action) => {
                     });
                 }
             } else {
-                getPermissionStatus(req, decoded.tokenUser.rol._id, action)
+                getPermissionStatus(req, decoded.tokenUser.role._id, action)
                     .then(resp => {
                         next();
                     })
@@ -55,13 +55,13 @@ const authMiddleware = async (req, res, next, action) => {
     }
 }
 
-function getPermissionStatus(req, rolId, action) {
+function getPermissionStatus(req, roleId, action) {
     return new Promise((resolve, reject) => {
         const permissionPath = action === 'second_action' ? `${req.route.path.split('/')[1]}_${req.route.path.split('/')[2]}` : req.route.path.split('/')[1];
         const permisionName = `${req.route.stack[0].method}_${permissionPath}`;
-        Promise.all([getPermissionData(req,permisionName), getRolData(rolId)])
+        Promise.all([getPermissionData(req,permisionName), getRoleData(roleId)])
             .then(resp => {
-                const permisions = resp[1].permissionsRol;
+                const permisions = resp[1].permissionsRole;
                 const permission = resp[0].permissionId;
                 if (permisions.indexOf(permission._id) > -1) {
                     if (permission.pinCodeRequired) return reject({ msg: 'auth_user_permission_pincode_is_required' });
@@ -90,12 +90,12 @@ function getPermissionData(req, permissionName) {
     })
 }
 
-function getRolData(rolId) {
+function getRoleData(roleId) {
     return new Promise((resolve, reject) => {
-        Rol.findById({ _id: rolId }, (err, rol) => {
+        Role.findById({ _id: roleId }, (err, role) => {
             if (err) return reject({ msg: 'auth_error_find_role' });
-            if (!rol) return reject({ msg: 'auth_user_without_role' });
-            return resolve({ permissionsRol: rol.permissions });
+            if (!role) return reject({ msg: 'auth_user_without_role' });
+            return resolve({ permissionsRole: role.permissions });
         })
     })
 }
