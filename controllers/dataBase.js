@@ -2,11 +2,17 @@
 const mongoose = require('mongoose');
 // Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
+// Metodos para manejar queries de busqueda
+const queryMethods = require('../services/query');
+// Metodos para manejar search fields
+const searchFieldsMethods = require('../services/searchFields');
+// Metodos para manejar search fields
+const populateMethods = require('../services/populateQuery');
 
-// 0. Funcion de prueba del controlador
 function dataBaseCtrl(req, res) {
-    res.status(200).send({ msg: 'Controlador de base de datos funcionando' })
+    res.status(200).send({ msg: 'Data base controller works' })
 }
+
 async function collectionsMenu(req, res) {
     let collections = [];
     for (const prop in mongoose.modelSchemas) {
@@ -14,21 +20,36 @@ async function collectionsMenu(req, res) {
     }
     res.status(200).send({
         status: 'OK',
-        msg: 'Colleciones actuales en la base de datos',
+        code: 200,
+        msg: 'Current collections in the database',
         data: collections
     });
 }
 
 async function getCollectionData(req, res) {
+    // 1. Identify the collection
     const collection = validateCollection(req.params.collection).collection;
-    const fields = validateCollection(req.params.collection).fields;
+    if (!collection) return res.status(500).send({
+        status: 'ERROR',
+        code: 500,
+        msg: 'Invalid collection'
+    });
+    // 2. Get the search fields
+    const searchFields = searchFieldsMethods.seachFileds(req.params.collection);
+    // 3. Get query
+    const query = req.query.search || req.query.filters ?
+        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
+    // 4. Get the population query
+    const populate = req.query.populate ? populateMethods.populateQuery(req.query.populate) : [];
+    // 5. Assemble the search payload
     const payload = {
         collection: collection,
-        page: req.params.page ? Number(req.params.page) : 1,
-        itemsPerPage: req.params.itemsPerPage ? Number(req.params.itemsPerPage) : 10,
-        unselectFields: ['__v'],
-        successMessage: 'Coleccion encontrada con exito',
-        errorMessage: `No se encontrados datos para la coleccion ${collection}`
+        query: query,
+        sort: req.query.sort ? req.query.sort : '-updatedAt',
+        page: req.query.page ? Number(req.query.page) : 1,
+        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
+        populateFields: populate,
+        unselectFields: ['__v']
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -44,9 +65,7 @@ async function getIdOnCollection(req, res) {
     const payload = {
         id: req.params.id,
         collection: collection,
-        unselectFields: ['__v'],
-        successMessage: 'Id encontrado con exito',
-        errorMessage: `Error buscando Id, el id ${req.params.id} no existe`
+        unselectFields: ['__v']
     }
     try {
         const resp = await dataBase.findCollectionId(payload);
@@ -61,9 +80,7 @@ async function removeIdOnCollection(req, res) {
     const collection = validateCollection(req.params.collection).collection;
     const payload = {
         id: req.params.id,
-        collection: collection,
-        successMessage: 'Id eliminado con exito',
-        errorMessage: 'Error eliminando id'
+        collection: collection
     }
     try {
         const resp = await dataBase.removeCollectionId(payload);
@@ -76,10 +93,13 @@ async function removeIdOnCollection(req, res) {
 
 async function removeCollection(req, res) {
     const collection = validateCollection(req.params.collection).collection;
+    if (!collection) return res.status(500).send({
+        status: 'ERROR',
+        code: 500,
+        msg: 'Invalid collection'
+    });
     const payload = {
-        collection: collection,
-        successMessage: 'Coleccion eliminada con exito',
-        errorMessage: `Error eliminando la coleccion ${collection}`
+        collection: collection
     }
     try {
         const resp = await dataBase.removeCollection(payload);
@@ -107,11 +127,16 @@ function validateCollection(collectionFront) {
     }
 }
 
+function removeAllCollections(req, res) {
+
+}
+
 module.exports = {
     dataBaseCtrl,
     collectionsMenu,
     getCollectionData,
     getIdOnCollection,
     removeIdOnCollection,
-    removeCollection
+    removeCollection,
+    removeAllCollections
 }

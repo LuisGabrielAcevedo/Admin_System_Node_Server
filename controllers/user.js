@@ -1,5 +1,6 @@
 // Models
 const User = require('../models/user');
+const UserConfigurations = require('../models/userConfigurations');
 // Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
 // Metodos para manejar archivos
@@ -49,7 +50,9 @@ async function getUsers(req, res) {
             company: req.tokenVerified.company
         }
     }
+    
     const searchFields = ['email', 'lastName', 'firstName'];
+
     const query = req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
 
@@ -69,14 +72,14 @@ async function getUsers(req, res) {
             }
         },
         {
-            path: 'rol',
+            path: 'role',
             select: { createdAt: 0, updatedAt: 0, __v: 0 },
             populate: [{
                 path: 'permissions',
                 select: { createdAt: 0, updatedAt: 0, __v: 0, applications: 0, description: 0 }
             },
             {
-                path: 'locals',
+                path: 'stores',
                 select: { createdAt: 0, updatedAt: 0, __v: 0 }
             }
             ]
@@ -108,7 +111,7 @@ async function findUser(req, res) {
                 select: { name: 1, _id: 1 }
             },
             {
-                path: 'rol',
+                path: 'role',
                 select: { name: 1, _id: 1 }
             }
         ]
@@ -190,14 +193,14 @@ async function simpleSearch(req, res) {
             '__v', 'password', 'createdAt', 'updatedAt', 'deletedAt',
             'documentType', 'documentNumber', 'language', 'application'
         ],
-        sort: req.query.sort ? req.query.sort : 'createdAt',
+        sort: req.query.sort ? req.query.sort : '-updatedAt',
         populateFields: [
             {
                 path: 'company',
                 select: { name: 1, _id: 1 }
             },
             {
-                path: 'rol',
+                path: 'role',
                 select: { name: 1, _id: 1 }
             }
         ]
@@ -219,7 +222,8 @@ function userRegister(req, res) {
             for (let field in req.body) {
                 user[field] = req.body[field];
             }
-            user['createdAt'] = moment().format('llll');
+            user['createdAt'] = moment().toISOString();
+            user['updatedAt'] = moment().toISOString();
             // 3. Validar datos repetidos
             User.find({}).or([{ email: user.email }]).exec((err, dataBaseResp) => {
                 if (err)
@@ -237,21 +241,31 @@ function userRegister(req, res) {
                 // 4. Encriptar contraseña 
                 bcrypt.hash(user.password, null, null, (err, hash) => {
                     user.password = hash;
-                    user.save((err, dataBaseResp1) => {
-                        if (err)
-                            return res.status(500).send({
-                                status: 'ERROR',
-                                code: 500,
-                                msg: `save_${User.modelName.toLowerCase()}_error`,
+                    // 5.
+                    dataBase.saveCollection({
+                        requestData: req.body,
+                        collection: UserConfigurations
+                    }).then(resp => {
+                        user.userConfigurations = resp.data._id;
+                        user.save((err, dataBaseResp1) => {
+                            if (err)
+                                return res.status(500).send({
+                                    status: 'ERROR',
+                                    code: 500,
+                                    msg: `save_${User.modelName.toLowerCase()}_error`,
+                                });
+                            dataBaseResp1.__v = undefined;
+                            return res.status(200).send({
+                                status: 'OK',
+                                code: 200,
+                                msg: `save_${User.modelName.toLowerCase()}_success`,
+                                data: dataBaseResp1
                             });
-                        dataBaseResp1.__v = undefined;
-                        return res.status(200).send({
-                            status: 'OK',
-                            code: 200,
-                            msg: `save_${User.modelName.toLowerCase()}_success`,
-                            data: dataBaseResp1
                         });
-                    });
+                    })
+                    .catch(validationErrorResp1 => {
+                        return res.status(validationErrorResp1.code).send(validationErrorResp1);
+                    })
                 })
             });
         })
@@ -276,14 +290,14 @@ function userLogin(req, res) {
                 }
             },
             {
-                path: 'rol',
+                path: 'role',
                 select: { _id: 1, name: 1 },
                 populate: [{
                     path: 'permissions',
                     select: { _id: 1, name: 1 }
                 },
                 {
-                    path: 'locals',
+                    path: 'stores',
                     select: { _id: 1, name: 1 }
                 }
                 ]

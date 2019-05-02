@@ -1,5 +1,5 @@
 // Modelos
-const Local = require('../models/local');
+const Local = require('../models/store');
 const Company = require('../models/company');
 // Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');

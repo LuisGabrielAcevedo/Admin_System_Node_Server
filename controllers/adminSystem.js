@@ -15,7 +15,7 @@ const paymentMethodsData = require('../data/paymentMethod');
 const  Company = require('../models/company');
 
 function adminSystemServer (req, res) {
-    res.status(200).send({ msg: 'Admin_System_Server funcionando correctamente' });
+    res.status(200).send({ msg: 'Admin_System_Server works' });
 }
 
 // 1. Prueba del controlador
@@ -35,9 +35,9 @@ function apiProductTypes(req, res) {
 
 // 3. Cargar datos en la base de datos
 function loadDataBaseData(req, res) {
-    dataFile.data.forEach(company => {
+    dataFile.forEach(company => {
         const payload = {
-            requestData: company.data,
+            requestData: company.company,
             collection: Company
         }
         dataBase.saveCollection(payload)

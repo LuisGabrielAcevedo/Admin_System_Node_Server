@@ -1,199 +1,341 @@
 const data = [
     {
-        data: {
+        company: {
             name: 'Pizzeria Antonio',
-            country: '5c170249511f544ec06fa2a1',
-            application: '5c3fe003a88f160d70249e40',
-            currency: 'Bs S'
+            country: '5cca2728ca8c9e085f5e00bf',
+            application: '5cca227c5084d906c1ffb021',
+            currencies: ['BS S']
         },
-        locals: [
+        stores: [
             {
                 company: null,
                 name: 'Pizzeria Antonio Sucursal Tachira',
-                application: '5c3fe003a88f160d70249e40',
+                application: '5cca227c5084d906c1ffb021',
                 address: 'Pasaje Cumana calle 11-30'
             },
             {
                 company: null,
                 name: 'Pizzeria Antonio Sucursal Caracas',
-                application: '5c3fe003a88f160d70249e40',
+                application: '5cca227c5084d906c1ffb021',
                 address: 'Pasaje Armonia calle 11-30'
             }
         ],
-        categories: [
-            { name: 'Bebidas con alcohol', type: '1', company: null },
-            { name: 'Bebidas sin alcohol', type: '1', company: null },
-            { name: 'Bebidas naturales', type: '2', company: null },
-            { name: 'Pizzas', type: '2', company: null }
-        ],
-        users: [
+        // users: [
+        //     {
+        //         email: 'luisgabriel_ace_pizzeria@hotmail.com',
+        //         lastName: 'Acevedo Ramirez',
+        //         firstName: 'Luis Gabriel',
+        //         company: null,
+        //         password: '123456',
+        //         application: '5cca227c5084d906c1ffb021',
+        //         ApplicationRole: 'ADMIN_SYSTEM_USER'
+        //     },
+        //     {
+        //         email: 'agus_ace_pizzeria@hotmail.com',
+        //         lastName: 'Cataneo',
+        //         firstName: 'Agustina',
+        //         company: null,
+        //         password: '123456',
+        //         application: '5cca227c5084d906c1ffb021',
+        //         ApplicationRole: 'ADMIN_SYSTEM_USER'
+        //     }
+        // ], 
+        roles: [
             {
-                email: 'luisgabriel_ace@hotmail.com',
-                lastName: 'Acevedo Ramirez',
-                firstName: 'Luis Gabriel',
-                company: null,
-                password: 'Aero1919',
-                application: '5c3fe003a88f160d70249e40'
+                company: null, 
+                name: 'Administrador',
+                application: '5cca227c5084d906c1ffb021',
             },
             {
-                email: 'agus_ace@hotmail.com',
-                lastName: 'Cataneo',
-                firstName: 'Agustina',
-                company: null,
-                password: 'Aero1919',
-                application: '5c3fe003a88f160d70249e40'
+                company: null, 
+                name: 'Cajero',
+                application: '5cca227c5084d906c1ffb021',
+            },
+            {
+                company: null, 
+                name: 'Cocinero',
+                application: '5cca227c5084d906c1ffb021',
             }
         ]
     },
     {
-        data: {
+        company: {
             name: 'Pizzeria el Punto',
-            country: '5c170249511f544ec06fa2a1',
-            application: '5c3fe003a88f160d70249e40',
-            currency: 'Bs S'
+            country: '5cca2728ca8c9e085f5e00bf',
+            application: '5cca227c5084d906c1ffb021',
+            currencies: ['BS S']
         },
-        locals: [
+        stores: [
             {
                 company: null,
                 name: 'Pizzeria el Punto Sucursal Monagas',
-                application: '5c3fe003a88f160d70249e40',
+                application: '5cca227c5084d906c1ffb021',
                 address: 'Pasaje Cumana calle 11-30'
             },
             {
                 company: null,
                 name: 'Pizzeria el Punto Sucursal Anzoategui',
-                application: '5c3fe003a88f160d70249e40',
+                application: '5cca227c5084d906c1ffb021',
                 address: 'Pasaje Armonia calle 11-30'
             }
         ],
-        categories: [
-            { name: 'Bebidas con alcohol', type: '1', company: null },
-            { name: 'Bebidas sin alcohol', type: '1', company: null },
-            { name: 'Bebidas naturales', type: '2', company: null },
-            { name: 'Pizzas', type: '2', company: null }
-        ],
-        users: [
+        // users: [
+        //     {
+        //         email: 'raul_pizzeria@hotmail.com',
+        //         lastName: 'Araujo',
+        //         firstName: 'Raul',
+        //         company: null,
+        //         password: '123456',
+        //         application: '5cca227c5084d906c1ffb021',
+        //         ApplicationRole: 'ADMIN_SYSTEM_USER'
+        //     },
+        //     {
+        //         email: 'andrea_pizzeria@hotmail.com',
+        //         lastName: 'Ramirez',
+        //         firstName: 'Andrea',
+        //         company: null,
+        //         password: '123456',
+        //         application: '5cca227c5084d906c1ffb021',
+        //         ApplicationRole: 'ADMIN_SYSTEM_USER'
+        //     }
+        // ],
+        roles: [
             {
-                email: 'raul@hotmail.com',
-                lastName: 'Araujo',
-                firstName: 'Raul',
-                company: null,
-                password: 'Aero1919',
-                application: '5c3fe003a88f160d70249e40'
+                company: null, 
+                name: 'Administrador',
+                application: '5cca227c5084d906c1ffb021',
             },
             {
-                email: 'andrea@hotmail.com',
-                lastName: 'Ramirez',
-                firstName: 'Andrea',
-                company: null,
-                password: 'Aero1919',
-                application: '5c3fe003a88f160d70249e40'
+                company: null, 
+                name: 'Cajero',
+                application: '5cca227c5084d906c1ffb021',
+            },
+            {
+                company: null, 
+                name: 'Cocinero',
+                application: '5cca227c5084d906c1ffb021',
             }
         ]
     },
     {
-        data: {
+        company: {
             name: 'Panaderia Cumana',
-            country: '5c170249511f544ec06fa2a1',
-            application: '5c3fe003a88f160d70249e40',
-            currency: 'Bs S'
+            country: '5cca2728ca8c9e085f5e00bf',
+            application: '5cca227c5084d906c1ffb021',
+            currencies: ['BS S']
         },
-        locals: [
+        stores: [
 
         ],
-        categories: [
-            { name: 'Bebidas con alcohol', type: '1', company: null },
-            { name: 'Bebidas sin alcohol', type: '1', company: null },
-            { name: 'Pan', type: '2', company: null },
-            { name: 'Galletas Secas', type: '2', company: null },
-            { name: 'Tortas', type: '2', company: null }
-        ],
-        users: [
+        // users: [
+        //     {
+        //         email: 'anna@hotmail.com',
+        //         lastName: 'Acevedo',
+        //         firstName: 'Anna',
+        //         company: null,
+        //         password: '123456',
+        //         application: '5cca227c5084d906c1ffb021',
+        //         ApplicationRole: 'ADMIN_SYSTEM_USER'
+        //     },
+        //     {
+        //         email: 'pedro@hotmail.com',
+        //         lastName: 'Ramirez',
+        //         firstName: 'Pedro',
+        //         company: null,
+        //         password: '123456',
+        //         application: '5cca227c5084d906c1ffb021',
+        //         ApplicationRole: 'ADMIN_SYSTEM_USER'
+        //     }
+        // ],
+        roles: [
             {
-                email: 'anna@hotmail.com',
-                lastName: 'Acevedo',
-                firstName: 'Anna',
-                company: null,
-                password: 'Aero1919',
-                application: '5c3fe003a88f160d70249e40'
+                company: null, 
+                name: 'Administrador',
+                application: '5cca227c5084d906c1ffb021',
             },
             {
-                email: 'pedro@hotmail.com',
-                lastName: 'Ramirez',
-                firstName: 'Pedro',
-                company: null,
-                password: 'Aero1919',
-                application: '5c3fe003a88f160d70249e40'
+                company: null, 
+                name: 'Cajero',
+                application: '5cca227c5084d906c1ffb021',
+            },
+            {
+                company: null, 
+                name: 'Cocinero',
+                application: '5cca227c5084d906c1ffb021',
             }
         ]
     },
     {
-        data: {
-            name: 'Caputo',
-            country: '5c170283511f544ec06fa2a2',
-            application: '5c4861dc9cf08a439440ebd1',
-            currency: 'AR $'
-        },
-        locals: [],
-        categories: [],
-        users: []
-    },
-    {
-        data: {
+        company: {
             name: 'Comida Venezolana',
-            country: '5c170283511f544ec06fa2a2',
+            country: '5cca24fb2ee8bd070b12feca',
             application: '5c3fe026a88f160d70249e41',
-            currency: 'AR $'
+            currencies: ['AR $']
         },
-        locals: [],
-        categories: [],
-        users: []
+        stores: [],
+        // users: [],
+        roles: [
+            {
+                company: null, 
+                name: 'Administrador',
+                application: '5cca227c5084d906c1ffb021',
+            },
+            {
+                company: null, 
+                name: 'Cajero',
+                application: '5cca227c5084d906c1ffb021',
+            },
+            {
+                company: null, 
+                name: 'Cocinero',
+                application: '5cca227c5084d906c1ffb021',
+            }
+        ]
     },
     {
-        data: {
+        company: {
             name: 'Cafe Martinez',
-            country: '5c170283511f544ec06fa2a2',
-            application: '5c3fe026a88f160d70249e41',
-            currency: 'AR $'
+            country: '5cca24fb2ee8bd070b12feca',
+            application: '5cca227c5084d906c1ffb021',
+            currencies: ['AR $']
         },
-        locals: [
+        stores: [
             {
                 company: null,
                 name: 'Cafe Martinez Sucursal Belgrano',
-                application: '5c3fe003a88f160d70249e40',
+                application: '5cca227c5084d906c1ffb021',
                 address: 'Pasaje Cumana calle 11-30'
             },
             {
                 company: null,
                 name: 'Cafe Martinez Sucursal Barracas',
-                application: '5c3fe003a88f160d70249e40',
+                application: '5cca227c5084d906c1ffb021',
                 address: 'Pasaje Armonia calle 11-30'
             }
         ],
-        categories: [
-            { name: 'Bebidas con alcohol', type: '1', company: null },
-            { name: 'Bebidas sin alcohol', type: '1', company: null },
-            { name: 'Galletas Secas', type: '2', company: null },
-            { name: 'Tortas', type: '2', company: null }
+        // users: [
+        //     {
+        //         email: 'florencia@hotmail.com',
+        //         lastName: 'Acevedo',
+        //         firstName: 'Florencia',
+        //         company: null,
+        //         password: '123456',
+        //         application: '5cca227c5084d906c1ffb021',
+        //         ApplicationRole: 'ADMIN_SYSTEM_USER'
+        //     },
+        //     {
+        //         email: 'ernesto@hotmail.com',
+        //         lastName: 'Ramirez',
+        //         firstName: 'Ernesto',
+        //         company: null,
+        //         password: '123456',
+        //         application: '5cca227c5084d906c1ffb021',
+        //         ApplicationRole: 'ADMIN_SYSTEM_USER'
+        //     }
+        // ],
+        roles: [
+            {
+                company: null, 
+                name: 'Administrador',
+                application: '5cca227c5084d906c1ffb021',
+            },
+            {
+                company: null, 
+                name: 'Cajero',
+                application: '5cca227c5084d906c1ffb021',
+            },
+            {
+                company: null, 
+                name: 'Cocinero',
+                application: '5cca227c5084d906c1ffb021',
+            },
+            {
+                company: null, 
+                name: 'Guardia',
+                application: '5cca227c5084d906c1ffb021',
+            }
+        ]
+    },
+    {
+        company: {
+            name: 'Date musica internacional',
+            country: '5cca24fb2ee8bd070b12feca',
+            application: '5cca2327062c7606d986e719',
+            currencies: ['AR $']
+        },
+        stores: [
+            {
+                company: null,
+                name: 'Cafe Martinez Sucursal Belgrano',
+                application: '5cca2327062c7606d986e719',
+                address: 'Pasaje Cumana calle 11-30'
+            },
+            {
+                company: null,
+                name: 'Cafe Martinez Sucursal Barracas',
+                application: '5cca2327062c7606d986e719',
+                address: 'Pasaje Armonia calle 11-30'
+            }
         ],
         users: [
             {
-                email: 'florencia@hotmail.com',
+                email: 'luisgabriel_ace@hotmail.com',
                 lastName: 'Acevedo',
-                firstName: 'Florencia',
+                firstName: 'Luis Gabriel',
                 company: null,
-                password: 'Aero1919',
-                application: '5c3fe003a88f160d70249e40'
+                password: '123456',
+                application: '5cca2327062c7606d986e719',
+                ApplicationRole: 'ADMIN_SYSTEM_USER'
             },
             {
-                email: 'ernesto@hotmail.com',
+                email: 'datemusica@hotmail.com',
                 lastName: 'Ramirez',
-                firstName: 'Ernesto',
+                firstName: 'Carlos',
                 company: null,
-                password: 'Aero1919',
-                application: '5c3fe003a88f160d70249e40'
+                password: '123456',
+                application: '5cca2327062c7606d986e719',
+                ApplicationRole: 'ADMIN_SYSTEM_USER'
+            }
+        ],
+        roles: [
+            {
+                company: null, 
+                name: 'Administrador',
+                application: '5cca2327062c7606d986e719',
+            },
+            {
+                company: null, 
+                name: 'Cajero',
+                application: '5cca2327062c7606d986e719',
+            },
+            {
+                company: null, 
+                name: 'Vendedor',
+                application: '5cca2327062c7606d986e719',
+            },
+            {
+                company: null, 
+                name: 'Gerente',
+                application: '5cca2327062c7606d986e719',
             }
         ]
+    },
+    {
+        company: {
+            name: 'Transporte carlos',
+            country: '5cca24fb2ee8bd070b12feca',
+            application: '5cca37c6a342520bbcd24564',
+            currencies: ['AR $']
+        }
+    },
+    {
+        company: {
+            name: 'Luis y Carlos canchitas pro',
+            country: '5cca24fb2ee8bd070b12feca',
+            application: '5cca3732a342520bbcd24563',
+            currencies: ['AR $']
+        }
     }
 ]
 
+module.exports = data;

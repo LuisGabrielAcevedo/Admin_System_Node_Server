@@ -40,7 +40,7 @@ async function getRoles(req, res) {
     const payload = {
         collection: Rol,
         query: query,
-        sort: req.query.sort ? req.query.sort : 'createdAt',
+        sort: req.query.sort ? req.query.sort : '-updatedAt',
         page: req.query.page ? Number(req.query.page) : 1,
         itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
         unselectFields: ['__v'],
@@ -139,7 +139,7 @@ async function simpleSearch(req, res) {
         collection: Rol,
         query: query,
         unselectFields: ['__v', 'password'],
-        sort: req.query.sort ? req.query.sort : 'createdAt',
+        sort: req.query.sort ? req.query.sort : '-updatedAt',
         successMessage: 'Roles encontrados con exito',
         errorMessage: 'Error buscando roles'
     }

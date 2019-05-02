@@ -38,7 +38,7 @@ async function getPermissions(req, res) {
     const payload = {
         collection: Permission,
         query: query,
-        sort: req.query.sort ? req.query.sort : 'updatedAt',
+        sort: req.query.sort ? req.query.sort : '-updatedAt',
         page: req.query.page ? Number(req.query.page) : 1,
         itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
         unselectFields: ['__v'],
@@ -109,7 +109,8 @@ async function updatePermissions(req, res) {
                     permissionToSave.name = name;
                     permissionToSave.module = item.module;
                     permissionToSave.actionType = item.actionType;
-                    permissionToSave.createdAt = moment().format('llll');
+                    permissionToSave.createdAt = moment().toISOString();
+                    permissionToSave.updatedAt = moment().toISOString();
                     permissionToSave.save((err, dataBaseResp1) => {
                         if (err) {
                             console.log(`Error creando permiso: ${name}`);
@@ -137,7 +138,7 @@ async function simpleSearch(req, res) {
         collection: Permission,
         query: query,
         unselectFields: ['__v', 'password'],
-        sort: req.query.sort ? req.query.sort : 'updatedAt',
+        sort: req.query.sort ? req.query.sort : '-updatedAt',
         successMessage: 'Permisos encontrados con exito',
         errorMessage: 'Error buscado permisos'
     }

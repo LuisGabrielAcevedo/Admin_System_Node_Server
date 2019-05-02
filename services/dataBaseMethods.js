@@ -66,7 +66,8 @@ function save(payload) {
 	return new Promise((resolve, reject) => {
 		let objToSave = new payload.collection();
 		// 1. Setear el momento de registro
-		objToSave['createdAt'] = moment().format('llll');
+		objToSave['createdAt'] = moment().toISOString();
+		objToSave['updatedAt'] = moment().toISOString();
 
 		// 2. Asignar valores
 		for (let field in payload.requestData) {
@@ -245,8 +246,8 @@ function simpleSearch(payload) {
 }
 
 function findCollectionId(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `find_id_${payload.collection.modelName.toLowerCase()}_succes`;
-	const msgError = payload.errorMessage ? payload.errorMessage : `find_id_${payload.collection.modelName.toLowerCase()}_error`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `findbyid_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgError = payload.errorMessage ? payload.errorMessage : `findbyid_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		// 1. Validar coleccion
 		if (!payload.collection)
@@ -411,7 +412,7 @@ function updateCollectionId(payload) {
 					if (payload.requestData.hasOwnProperty(element))
 						dataBaseResp[element] = payload.requestData[element];
 				}
-				dataBaseResp['updatedAt'] = moment().format('llll');
+				dataBaseResp['updatedAt'] = moment().toISOString();
 				payload.collection.findByIdAndUpdate(dataBaseResp._id, dataBaseResp, (err, dataBaseResp1) => {
 					if (err)
 						return reject({
@@ -475,7 +476,7 @@ function updateCollectionId(payload) {
 										dataBaseResp[element] = payload.requestData[element];
 								}
 								// 11. Setear el momento de la actualizacion
-								dataBaseResp['updatedAt'] = moment().format('llll');
+								dataBaseResp['updatedAt'] = moment().toISOString();
 								// 12. Mover archivo al directorio
 								let newPath = `${fileExtensionResp.directory}/${fileExtensionResp.fileName}`;
 								payload.files.file.mv(path.normalize(newPath), (err) => {

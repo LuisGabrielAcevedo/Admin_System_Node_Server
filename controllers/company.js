@@ -19,9 +19,7 @@ async function saveCompany(req, res) {
 		requiredFields: [ 'country', 'name', 'application' ],
 		repeatedFields: [ 'name' ],
 		requestData: req.body,
-		collection: Company,
-		successMessage: 'Empresa guardada con exito',
-		errorMessage: `Error guardando empresa`
+		collection: Company
 	};
 	try {
 		const resp = await dataBase.saveCollection(payload);
@@ -42,7 +40,7 @@ async function getCompanies(req, res) {
 	const payload = {
 		collection: Company,
 		query: query,
-		sort: req.query.sort ? req.query.sort : 'createdAt',
+		sort: req.query.sort ? req.query.sort : '-updatedAt',
 		page: req.query.page ? Number(req.query.page) : 1,
 		itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
 		unselectFields: [ '__v' ],
@@ -63,9 +61,7 @@ async function getCompanies(req, res) {
 				path: 'admin',
 				select: { firstName: 1, _id: 1, profileImage: 1 }
 			}
-		],
-		successMessage: 'Empresas encontrados con exito',
-		errorMessage: 'Error buscado empresas'
+		]
 	};
 	try {
 		const resp = await dataBase.findCollection(payload);
@@ -81,9 +77,7 @@ async function updateCompany(req, res) {
 		const payload = {
 			id: req.params.id,
 			collection: Company,
-			requestData: req.body,
-			successMessage: 'Empresa actualizada con exito',
-			errorMessage: 'Error actualizando'
+			requestData: req.body
 		};
 		try {
 			const resp = await dataBase.updateCollectionId(payload);
@@ -127,9 +121,7 @@ async function updateCompany(req, res) {
                     file: req.files[file],
                     requestData: req.body,
                     currentObject: dataBaseResp,
-                    replaceFile: true,
-                    successMessage: 'Empresa actualizada con exito',
-			        errorMessage: 'Error actualizando'
+                    replaceFile: true
                 }
                 promiseData.push(fileMethods.saveImage(payload));
             }
@@ -149,9 +141,7 @@ async function removeCompany(req, res) {
 	const payload = {
 		id: req.params.id,
 		collection: Company,
-		fileFields: [ 'profileImage', 'logo' ],
-		successMessage: 'Empresa eliminada con exito',
-		errorMessage: 'Error eliminando empresa'
+		fileFields: [ 'profileImage', 'logo' ]
 	};
 	try {
 		const resp = await dataBase.removeCollectionId(payload);
@@ -208,9 +198,7 @@ async function simpleSearch(req, res) {
 				select: { name: 1, _id: 1, code: 1 }
 			}
 		],
-		sort: req.query.sort ? req.query.sort : 'createdAt',
-		successMessage: 'Empresas encontrados con exito',
-		errorMessage: 'Error buscado empresas'
+		sort: req.query.sort ? req.query.sort : '-updatedAt'
 	};
 	try {
 		const resp = await dataBase.simpleSearch(payload);
