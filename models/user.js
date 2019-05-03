@@ -8,7 +8,7 @@ const UserSchema = Schema({
     lastName: { type: String, required: true },
     company: { type: Schema.ObjectId, ref: 'Company', default: null },
     application: { type: Schema.ObjectId, ref: 'Application', default: null },
-    ApplicationRole: { type: String, default: 'USER' },
+    applicationRole: { type: String, default: 'USER' },
     userName: { type: String, default: null },
     token: { type: String, default: null },
     isActive: { type: Boolean, default: true },
