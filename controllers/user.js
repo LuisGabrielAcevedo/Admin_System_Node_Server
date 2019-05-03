@@ -1,4 +1,4 @@
-// Models
+// Modelos
 const User = require('../models/user');
 const UserConfigurations = require('../models/userConfigurations');
 const UserInformation = require('../models/userInformation');
@@ -64,31 +64,37 @@ async function getUsers(req, res) {
         page: req.query.page ? Number(req.query.page) : 1,
         itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
         unselectFields: ['__v'],
-        populateFields: [{
-            path: 'company',
-            select: { createdAt: 0, updatedAt: 0, __v: 0 },
-            populate: {
-                path: 'country',
-                select: { createdAt: 0, updatedAt: 0, __v: 0 }
-            }
-        },
-        {
-            path: 'role',
-            select: { createdAt: 0, updatedAt: 0, __v: 0 },
-            populate: [{
-                path: 'permissions',
-                select: { createdAt: 0, updatedAt: 0, __v: 0, applications: 0, description: 0 }
+        populateFields: [
+            {
+                path: 'company',
+                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 },
+                populate: {
+                    path: 'country',
+                    select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 }
+                }
             },
             {
-                path: 'stores',
-                select: { createdAt: 0, updatedAt: 0, __v: 0 }
+                path: 'role',
+                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 },
+                populate: [
+                    {
+                        path: 'permissions',
+                        select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0, applications: 0, description: 0 }
+                    },
+                    {
+                        path: 'stores',
+                        select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 }
+                    }
+                ]
+            },
+            {
+                path: 'application',
+                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0, description: 0 }
+            },
+            {
+                path: 'profileImage',
+                select: { url: 1 }
             }
-            ]
-        },
-        {
-            path: 'application',
-            select: { createdAt: 0, updatedAt: 0, __v: 0, description: 0 }
-        }
         ]
     };
     try {
@@ -114,6 +120,10 @@ async function findUser(req, res) {
             {
                 path: 'role',
                 select: { name: 1, _id: 1 }
+            },
+            {
+                path: 'profileImage',
+                select: { url: 1 }
             }
         ]
     }
@@ -203,6 +213,10 @@ async function simpleSearch(req, res) {
             {
                 path: 'role',
                 select: { name: 1, _id: 1 }
+            },
+            {
+                path: 'profileImage',
+                select: { url: 1 }
             }
         ]
     }
@@ -218,7 +232,7 @@ async function simpleSearch(req, res) {
 async function userRegister(req, res) {
     try {
         // 1. Validate
-        await validation.body(User, req.body, 'POST');
+        // await validation.body(User, req.body, 'POST');
         // 2. Validate email repeated
         const user = await userMethods.validateEmail(req.body.email);
         // 3. Password
@@ -253,31 +267,45 @@ function userLogin(req, res) {
     const password = userfront.password;
     User.findOne({ email: email })
         .populate(
-            [{
-                path: 'company',
-                select: { _id: 1, name: 1 },
-                populate: {
-                    path: 'country',
-                    select: { _id: 1, name: 1 }
-                }
-            },
-            {
-                path: 'role',
-                select: { _id: 1, name: 1 },
-                populate: [{
-                    path: 'permissions',
+            [
+                {
+                    path: 'company',
+                    select: { _id: 1, name: 1 },
+                    populate: {
+                        path: 'country',
+                        select: { _id: 1, name: 1 }
+                    }
+                },
+                {
+                    path: 'role',
+                    select: { _id: 1, name: 1 },
+                    populate: [
+                        {
+                            path: 'permissions',
+                            select: { _id: 1, name: 1 }
+                        },
+                        {
+                            path: 'stores',
+                            select: { _id: 1, name: 1 }
+                        }
+                    ]
+                },
+                {
+                    path: 'application',
                     select: { _id: 1, name: 1 }
                 },
                 {
-                    path: 'stores',
-                    select: { _id: 1, name: 1 }
+                    path: 'profileImage',
+                    select: { url: 1 }
+                },
+                {
+                    path: 'userConfigurations',
+                    select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 }
+                },
+                {
+                    path: 'userInformation',
+                    select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 }
                 }
-                ]
-            },
-            {
-                path: 'application',
-                select: { _id: 1, name: 1 }
-            }
             ]
         )
         .exec((err, dataBaseResp) => {
@@ -312,9 +340,6 @@ function userLogin(req, res) {
 
         })
 }
-
-
-
 
 
 module.exports = {

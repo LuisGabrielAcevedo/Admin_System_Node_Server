@@ -446,81 +446,31 @@ function updateCollectionId(payload) {
 						code: 422,
 						msg: `The_field_fileField_is_required_to_complete_the_update_process. Example: fileField: 'profileImage'. Se refiere al campo donde va la imagen en el objeto`
 					});
-				// 5. Validar extension
-				fileMethods
-					.validateFile(payload.id, payload.type, payload.files.file)
-					.then((fileExtensionResp) => {
-						// 6. Validar existencia del directorio
-						fileMethods
-							.verifyDirectory(fileExtensionResp.directory)
-							.then(() => {
-								// 7. Verificar si el archivo anterior existe
-								if (dataBaseResp[payload.fileField].fileName) {
-									const oldPath = `${fileExtensionResp.path}/${payload.id}/${dataBaseResp[
-										payload.fileField
-									].fileName}`;
-									// 8. Eliminar archivo anterior
-									fs.exists(path.normalize(oldPath), function (exists) {
-										if (exists) {
-											fs.unlink(path.normalize(oldPath));
-										}
+				fileMethods.saveImage(payload)
+					.then(saveImageResp => {
+						dataBaseResp[payload.fileField] = saveImageResp._id;
+						payload.collection.findByIdAndUpdate(
+							dataBaseResp._id,
+							dataBaseResp,
+							(err, dataBaseResp1) => {
+								if (err)
+									return reject({
+										status: 'ERROR',
+										code: 500,
+										msg: msgError
 									});
-								}
-								// 9. Asignar nuevo archivo al objeto
-								dataBaseResp[payload.fileField].fileName = fileExtensionResp.fileName;
-								dataBaseResp[payload.fileField].url = fileExtensionResp.url;
-								dataBaseResp[payload.fileField].directory = fileExtensionResp.directory;
-								// 10 . Actualizar campos en el objeto
-								for (let element in payload.requestData) {
-									if (payload.requestData.hasOwnProperty(element))
-										dataBaseResp[element] = payload.requestData[element];
-								}
-								// 11. Setear el momento de la actualizacion
-								dataBaseResp['updatedAt'] = moment().toISOString();
-								// 12. Mover archivo al directorio
-								let newPath = `${fileExtensionResp.directory}/${fileExtensionResp.fileName}`;
-								payload.files.file.mv(path.normalize(newPath), (err) => {
-									if (err)
-										reject({
-											status: 'WARNING',
-											code: 422,
-											msg: `error_move_file ${path.normalize(newPath)}`
-										});
-									payload.collection.findByIdAndUpdate(
-										dataBaseResp._id,
-										dataBaseResp,
-										(err, dataBaseResp1) => {
-											if (err)
-												return reject({
-													status: 'ERROR',
-													code: 500,
-													msg: msgError
-												});
-											return resolve({
-												status: 'OK',
-												code: 200,
-												msg: msgSuccess,
-												data: dataBaseResp
-											});
-										}
-									);
+								return resolve({
+									status: 'OK',
+									code: 200,
+									msg: msgSuccess,
+									data: dataBaseResp
 								});
-							})
-							.catch((fileDirectoryError) => {
-								reject({
-									status: 'WARNING',
-									code: 422,
-									msg: fileDirectoryError.msg
-								});
-							});
+							}
+						);
 					})
-					.catch((fileExtensionError) => {
-						reject({
-							status: 'WARNING',
-							code: 422,
-							msg: fileExtensionError.msg
-						});
-					});
+					.catch(saveImageError => {
+						reject(saveImageError);
+					})
 			}
 		});
 	});
@@ -558,21 +508,21 @@ function removeCollectionId(payload) {
 					code: 422,
 					msg: `the_id ${payload.id} does_not_exist. it_has_probably_already_been_eliminated`
 				});
-			// 4. Borrar ficheros
-			if (payload.hasOwnProperty('fileFields')) {
-				payload.fileFields.forEach((fileField) => {
-					if (dataBaseResp[fileField].fileName) {
-						const currentPath = `${dataBaseResp[fileField].directory}/${dataBaseResp[fileField].fileName}`;
-						const curretPathFormated = path.normalize(currentPath);
-						fs.exists(curretPathFormated, function (exists) {
-							if (exists) fs.unlink(curretPathFormated);
-							fs.exists(dataBaseResp[fileField].directory, function (exists) {
-								if (exists) fs.rmdirSync(dataBaseResp[fileField].directory);
-							});
-						});
-					}
-				});
-			}
+			// // 4. Borrar ficheros
+			// if (payload.hasOwnProperty('fileFields')) {
+			// 	payload.fileFields.forEach((fileField) => {
+			// 		if (dataBaseResp[fileField].fileName) {
+			// 			const currentPath = `${dataBaseResp[fileField].directory}/${dataBaseResp[fileField].fileName}`;
+			// 			const curretPathFormated = path.normalize(currentPath);
+			// 			fs.exists(curretPathFormated, function (exists) {
+			// 				if (exists) fs.unlink(curretPathFormated);
+			// 				fs.exists(dataBaseResp[fileField].directory, function (exists) {
+			// 					if (exists) fs.rmdirSync(dataBaseResp[fileField].directory);
+			// 				});
+			// 			});
+			// 		}
+			// 	});
+			// }
 			dataBaseResp.__v = undefined;
 			return resolve({
 				status: 'OK',
@@ -623,3 +573,64 @@ module.exports = {
 	pushCollectionId,
 	pullCollectionId
 };
+
+
+
+// // 5. Validar extension
+// fileMethods
+// 	.validateFile(payload.id, payload.type, payload.files.file)
+// 	.then((fileExtensionResp) => {
+// 		// 6. Validar existencia del directorio
+// 		fileMethods
+// 			.verifyDirectory(fileExtensionResp.directory)
+// 			.then(() => {
+// 				// 7. Verificar si el archivo anterior existe
+// 				if (dataBaseResp[payload.fileField].fileName) {
+// 					const oldPath = `${fileExtensionResp.path}/${payload.id}/${dataBaseResp[
+// 						payload.fileField
+// 					].fileName}`;
+// 					// 8. Eliminar archivo anterior
+// 					fs.exists(path.normalize(oldPath), function (exists) {
+// 						if (exists) {
+// 							fs.unlink(path.normalize(oldPath));
+// 						}
+// 					});
+// 				}
+// 				// 9. Asignar nuevo archivo al objeto
+// 				dataBaseResp[payload.fileField].fileName = fileExtensionResp.fileName;
+// 				dataBaseResp[payload.fileField].url = fileExtensionResp.url;
+// 				dataBaseResp[payload.fileField].directory = fileExtensionResp.directory;
+// 				// 10 . Actualizar campos en el objeto
+// 				for (let element in payload.requestData) {
+// 					if (payload.requestData.hasOwnProperty(element))
+// 						dataBaseResp[element] = payload.requestData[element];
+// 				}
+// 				// 11. Setear el momento de la actualizacion
+// 				dataBaseResp['updatedAt'] = moment().toISOString();
+// 				// 12. Mover archivo al directorio
+// 				let newPath = `${fileExtensionResp.directory}/${fileExtensionResp.fileName}`;
+// 				payload.files.file.mv(path.normalize(newPath), (err) => {
+// 					if (err)
+// 						reject({
+// 							status: 'WARNING',
+// 							code: 422,
+// 							msg: `error_move_file ${path.normalize(newPath)}`
+// 						});
+
+// 				});
+// 			})
+// 			.catch((fileDirectoryError) => {
+// 				reject({
+// 					status: 'WARNING',
+// 					code: 422,
+// 					msg: fileDirectoryError.msg
+// 				});
+// 			});
+// 	})
+// 	.catch((fileExtensionError) => {
+// 		reject({
+// 			status: 'WARNING',
+// 			code: 422,
+// 			msg: fileExtensionError.msg
+// 		});
+// 	});

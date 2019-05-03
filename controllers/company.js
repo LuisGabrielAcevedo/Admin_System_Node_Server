@@ -8,6 +8,8 @@ const fileMethods = require('../services/fileMethods');
 const path = require('path');
 // Metodos para manejar queries de busqueda
 const queryMethods = require('../services/query');
+// Metodos de validacion
+const validation = require('../services/validation');
 
 // 0. Funcion de prueba del controlador
 function company(req, res) {
@@ -22,6 +24,7 @@ async function saveCompany(req, res) {
 		collection: Company
 	};
 	try {
+		await validation.body(Company, req.body, 'POST');
 		const resp = await dataBase.saveCollection(payload);
 		return res.status(200).send(resp);
 	} catch (err) {
@@ -60,7 +63,11 @@ async function getCompanies(req, res) {
 			{
 				path: 'admin',
 				select: { firstName: 1, _id: 1, profileImage: 1 }
-			}
+			},
+			{
+                path: 'profileImage',
+                select: { url: 1 }
+            }
 		]
 	};
 	try {
@@ -73,67 +80,20 @@ async function getCompanies(req, res) {
 
 // 4. Actualizar una Empresa
 async function updateCompany(req, res) {
-	if (req.files === undefined || req.files === null) {
-		const payload = {
-			id: req.params.id,
-			collection: Company,
-			requestData: req.body
-		};
-		try {
-			const resp = await dataBase.updateCollectionId(payload);
-			return res.status(resp.code).send(resp);
-		} catch (err) {
-			return res.status(err.code).send(err);
-		}
-	} else { 
-        let fileType, fileField = '';  
-        let promiseData = [];
-        // 2. Buscar si el id es valido
-		Company.findById(req.params.id).exec((err, dataBaseResp) => {
-			if (err)
-                return res.status(500).send({
-					status: 'ERROR',
-					code: 500,
-					msg: 'Error comprobando existencia de la empresa en la base de datos'
-				});
-			if (!dataBaseResp)
-                return res.status(404).send({
-					status: 'ERROR',
-					code: 404,
-					msg: `La empresa ${payload.id} no existe. Probablemente ya fue eliminado`
-				});
-            dataBaseResp.__v = undefined;
-
-            for (const file in req.files) {
-                if (file === 'image') {
-                    fileType = 'IMAGE_COMPANY';
-                    fileField = 'profileImage';
-                }
-                if (file === 'logo') {
-                    fileType = 'LOGO_COMPANY';
-                    fileField = 'logo';
-                }
-                const payload = {
-                    collection: Company,
-                    id: req.params.id,
-                    type: fileType,
-                    fileField: fileField,
-                    file: req.files[file],
-                    requestData: req.body,
-                    currentObject: dataBaseResp,
-                    replaceFile: true
-                }
-                promiseData.push(fileMethods.saveImage(payload));
-            }
-			Promise.all(promiseData)
-			.then(resp => {
-                return res.status(resp[promiseData.length-1].code).send(resp[promiseData.length-1]);
-            })
-            .catch(err => {
-                return res.status(err.code).send(err);
-            })
-        })
-	}
+	const payload = {
+        id: req.params.id,
+        collection: Company,
+        requestData: req.body,
+        files: req.files,
+        type: 'IMAGE_COMPANY',
+        fileField: 'profileImage'
+    }
+    try {
+        const resp = await dataBase.updateCollectionId(payload);
+        return res.status(resp.code).send(resp);
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
 }
 
 // 5. Borrar una empresa
@@ -196,7 +156,11 @@ async function simpleSearch(req, res) {
 			{
 				path: 'application',
 				select: { name: 1, _id: 1, code: 1 }
-			}
+			},
+			{
+                path: 'profileImage',
+                select: { url: 1 }
+            }
 		],
 		sort: req.query.sort ? req.query.sort : '-updatedAt'
 	};

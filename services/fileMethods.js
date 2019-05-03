@@ -1,9 +1,9 @@
 const config = require('../config');
-// Librerias para trabajar con ficheros
 const path = require('path');
 const fs = require('fs');
-// Libreria para registrar momento
 const moment = require('moment');
+const Image = require('../models/image');
+const dataBase = require('./dataBaseMethods');
 
 function validateFile(id, type, file) {
 	const imageExtensions = ['png', 'jpg', 'gif', 'svg', 'jpeg'];
@@ -73,9 +73,11 @@ function validateFile(id, type, file) {
 		directory = path.normalize(pathFormated);
 		return resolve({
 			fileName: fileName,
-			url: url,
+			associatedId: id,
+			type,
+			url,
 			path: pathToSave,
-			directory: directory
+			directory
 		});
 	});
 }
@@ -132,64 +134,40 @@ function getFile(payload) {
 function saveImage(payload) {
 	return new Promise((resolve, reject) => {
 		// 1. Validar extension
-		validateFile(payload.id, payload.type, payload.file)
+		validateFile(payload.id, payload.type, payload.files.file)
 			.then((fileExtensionResp) => {
 				// 2. Verificar directorio
 				verifyDirectory(fileExtensionResp.directory)
 					.then(() => {
-						if (payload.replaceFile) {
-							// 3. Verificar si el archivo anterior existe
-							if (payload.currentObject[payload.fileField].fileName) {
-								const oldPath = `${fileExtensionResp.path}/${payload.id}/${payload.currentObject[
-									payload.fileField
-								].fileName}`;
-								// 4. Eliminar archivo anterior
-								fs.exists(path.normalize(oldPath), function (exists) {
-									if (exists) {
-										fs.unlink(path.normalize(oldPath));
-									}
-								});
-							}
-							// 5. Asignar nuevo archivo al objeto
-							payload.currentObject[payload.fileField].fileName = fileExtensionResp.fileName;
-							payload.currentObject[payload.fileField].url = fileExtensionResp.url;
-							payload.currentObject[payload.fileField].directory = fileExtensionResp.directory;
-						} else {
-							// 6.
-						}
-						// 7. Actualizar campos en el objeto
-						for (const element in payload.requestData) {
-							if (payload.requestData.hasOwnProperty(element))
-								payload.currentObject[element] = payload.requestData[element];
-						}
-						// 8. Setear el momento de la actualizacion
-						payload.currentObject['updatedAt'] = moment().format('llll');
-
+						// 3. Mover el archivo
 						let newPath = `${fileExtensionResp.directory}/${fileExtensionResp.fileName}`;
-						payload.file.mv(path.normalize(newPath), (err) => {
+						payload.files.file.mv(path.normalize(newPath), (err) => {
 							if (err)
 								reject({
-									status: 'ERROR',
-									code: 500,
-									msg: `Error moviendo archivo al directorio ${path.normalize(newPath)}`
+									status: 'WARNING',
+									code: 422,
+									msg: `error_move_file ${path.normalize(newPath)}`
 								});
-							payload.collection.findByIdAndUpdate(
-								payload.currentObject._id,
-								payload.currentObject,
-								(err, dataBaseResp1) => {
-									if (err)
-										return reject({
-											status: 'ERROR',
-											code: 500,
-											msg: payload.errorMessage
-										});
-									return resolve({
-										status: 'OK',
-										code: 200,
-										msg: payload.successMessage,
-										data: payload.currentObject
+							let objToSave = new Image();
+							// 4. Setear el momento de registro
+							objToSave['createdAt'] = moment().toISOString();
+							objToSave['updatedAt'] = moment().toISOString();
+					
+							// 5. Asignar valores
+							for (let field in fileExtensionResp) {
+								objToSave[field] = fileExtensionResp[field];
+							}
+							// 6. Guardar imagen
+							objToSave.save((err, dataBaseResp1) => {
+								if (err)
+									return reject({
+										status: 'ERROR',
+										code: 500,
+										msg: msgError
 									});
-								});
+								dataBaseResp1.__v = undefined;
+								return resolve(dataBaseResp1);
+							});
 						})
 					})
 					.catch((fileDirectoryError) => {
@@ -209,6 +187,7 @@ function saveImage(payload) {
 			});
 	})
 }
+
 
 module.exports = {
 	validateFile,
