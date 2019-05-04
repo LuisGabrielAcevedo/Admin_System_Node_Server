@@ -67,6 +67,10 @@ async function getCustomers(req, res) {
             {
                 path: 'profileImage',
                 select: { url: 1 }
+            },
+            {
+                path: 'customerInformation',
+                select: { createdAt: 0, updatedAt: 0, __v: 0  }
             }
         ]
     }

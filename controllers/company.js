@@ -24,7 +24,7 @@ async function saveCompany(req, res) {
 		collection: Company
 	};
 	try {
-		await validation.body(Company, req.body, 'POST');
+		// await validation.body(Company, req.body, 'POST');
 		const resp = await dataBase.saveCollection(payload);
 		return res.status(200).send(resp);
 	} catch (err) {

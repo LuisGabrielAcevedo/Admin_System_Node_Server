@@ -56,6 +56,10 @@ async function getStores(req, res) {
                 select: { name: 1, _id: 1 }
             },
             {
+                path: 'country',
+                select: { name: 1, _id: 1 }
+            },
+            {
                 path: 'company',
                 select: { name: 1, _id: 1, profileImage: 1 }
             },

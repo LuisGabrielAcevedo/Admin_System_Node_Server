@@ -20,6 +20,7 @@
   "homepage": "https://github.com/musicaga/Admin-System-Server#readme",
   "dependencies": {
     "apollo-server-express": "^2.2.6",
+    "axios": "^0.18.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
@@ -36,6 +37,7 @@
     "mongoose-pagination": "^1.0.0",
     "nodemailer": "^4.6.4",
     "path": "^0.12.7",
+    "save": "^2.3.3",
     "socket.io": "^2.2.0"
   },
   "devDependencies": {

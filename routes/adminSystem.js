@@ -16,5 +16,8 @@ api.get('/units', adminSystemCtrl.units);
 api.get('/coins', adminSystemCtrl.coins);
 // 6. Metodos de pago
 api.get('/payment-methods', adminSystemCtrl.paymentMethods);
+// 7. Generar usuarios 
+api.post('/random-users', adminSystemCtrl.randomUsers);
+
 
 module.exports = api;

@@ -12,7 +12,6 @@ var fs = require('fs');
 
 function saveCollection(payload) {
 	let repeatedValidateQuery = [];
-
 	if (payload.requestData.hasOwnProperty('email')) {
 		payload.requestData['email'] = payload.requestData['email'].toLowerCase();
 	}

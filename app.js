@@ -27,6 +27,7 @@ const brandRoutes = require('./routes/product/brand');
 const vendorRoutes = require('./routes/product/vendor');
 const orderRoutes = require('./routes/sale/order');
 const orderItemRoutes = require('./routes/sale/orderItem');
+const followRoutes = require('./routes/follow');
 
 // 4. Configuracion del body parser
 const body_parser = require('body-parser');
@@ -63,6 +64,8 @@ app.use('/api/v1', brandRoutes);
 app.use('/api/v1', vendorRoutes);
 app.use('/api/v1', orderRoutes);
 app.use('/api/v1', orderItemRoutes);
+app.use('/api/v1', followRoutes);
+
 
 // 8. Exportar app
 module.exports = app;
