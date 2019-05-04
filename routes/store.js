@@ -4,18 +4,18 @@ const api = express.Router();
 const authMiddleware = require('../middlewares/auth');
 
 // 0. Prueba del controlador
-api.get('/stores/controller', localCtrl.local);
+api.get('/stores/controller', localCtrl.store);
 // 1. Guagar un administrador
-api.post('/stores' , authMiddleware.authMiddlewareFunction, localCtrl.saveLocal);
-// 2. Obtener locales
-api.get('/stores', authMiddleware.authMiddlewareFunction, localCtrl.getLocals);
-// 3. Buscar un local
-api.get('/stores/:id', authMiddleware.authMiddlewareFunction, localCtrl.findLocal);
-// 4. Actualizar un local
-api.put('/stores/:id', authMiddleware.authMiddlewareFunction, localCtrl.updateLocal);
-// 5. Borrar un local
-api.delete('/stores/:id', authMiddleware.authMiddlewareFunction, localCtrl.removeLocal);
-// 6. Obtener locales buscador
+api.post('/stores' , authMiddleware.authMiddlewareFunction, localCtrl.saveStore);
+// 2. Obtener tiendas
+api.get('/stores', authMiddleware.authMiddlewareFunction, localCtrl.getStores);
+// 3. Buscar una tienda
+api.get('/stores/:id', authMiddleware.authMiddlewareFunction, localCtrl.findStore);
+// 4. Actualizar una tienda
+api.put('/stores/:id', authMiddleware.authMiddlewareFunction, localCtrl.updateStore);
+// 5. Borrar una tienda
+api.delete('/stores/:id', authMiddleware.authMiddlewareFunction, localCtrl.removeStore);
+// 6. Obtener tiendas buscador
 api.get('/stores/search/all-list', authMiddleware.authMiddlewareFunction, localCtrl.simpleSearch);
 
 module.exports = api;

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const Role = require('../models/rol');
+const Role = require('../models/role');
 const Permission = require('../models/permission');
 
 const authMiddlewareFunctionSecondAction = (req, res, next) => {

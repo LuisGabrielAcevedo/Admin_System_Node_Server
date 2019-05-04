@@ -9,15 +9,14 @@ const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 
 // 3. Cargar rutas
-const adminRoutes = require('./routes/admin');
 const dataBaseRoutes = require('./routes/dataBase');
 const countryRoutes = require('./routes/country');
 const companyRoutes = require('./routes/company');
 const userRoutes = require('./routes/user');
 const applicationRoutes = require('./routes/application');
 const permissionRoutes = require('./routes/permission');
-const rolRoutes = require('./routes/rol');
-const localRoutes = require('./routes/store');
+const rolRoutes = require('./routes/role');
+const storeRoutes = require('./routes/store');
 const customerRoutes = require('./routes/customer');
 const licenseRoutes = require('./routes/license');
 const adminSystemRoutes = require('./routes/adminSystem');
@@ -35,16 +34,6 @@ app.use(body_parser.urlencoded({ extended: false }));
 app.use(body_parser.json());
 
 // 5. socket configuration
-// const socketIO = require('socket.io');
-// const http = require('http');
-// const server = http.createServer(app);
-// module.exports.io = socketIO(server);
-// require('./sockets/sockets');
-
-// server.listen(5000, (err) => {
-//     if (err) throw new Error(err);
-//     console.log(`Servidor de sockets funcionando correctamente por el puerto http://localhost:${ 5000 }`);
-// });
 
 // 6. Configuracion de las cabeceras para la comunicacion con angular
 app.use((req, res, next) => {
@@ -56,7 +45,6 @@ app.use((req, res, next) => {
 });
 
 // 7. Rutas base de funcionamiento
-app.use('/api/v1', adminRoutes);
 app.use('/api/v1', dataBaseRoutes);
 app.use('/api/v1', countryRoutes);
 app.use('/api/v1', companyRoutes);
@@ -64,7 +52,7 @@ app.use('/api/v1', userRoutes);
 app.use('/api/v1', applicationRoutes);
 app.use('/api/v1', permissionRoutes);
 app.use('/api/v1', rolRoutes);
-app.use('/api/v1', localRoutes);
+app.use('/api/v1', storeRoutes);
 app.use('/api/v1', customerRoutes);
 app.use('/api/v1', licenseRoutes);
 app.use('/api/v1', adminSystemRoutes);

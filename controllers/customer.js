@@ -1,5 +1,6 @@
 // Modelos
 const Customer = require('../models/customer');
+const CustomerInformation = require('../models/userInformation');
 // Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
 // Metodos para manejar archivos
@@ -18,13 +19,17 @@ function customer(req, res) {
 
 // 1. Guardar un cliente
 async function saveCustomer(req, res) {
-    const payload = {
-        requestData: req.body,
-        collection: Customer
-    }
     try {
-        await validation.body(Customer, req.body, 'POST');
-        const resp = await dataBase.saveCollection(payload);
+        // await validation.body(Customer, req.body, 'POST');
+        const customerInformation = await dataBase.saveCollection({
+            requestData: req.body,
+            collection: CustomerInformation
+        });
+        req.body.customerInformation = customerInformation.data._id;
+        const resp = await dataBase.saveCollection({
+            requestData: req.body,
+            collection: Customer
+        });
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -50,14 +55,20 @@ async function getCustomers(req, res) {
         page: req.query.page ? Number(req.query.page) : 1,
         itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
         unselectFields: ['__v'],
-        populateFields: {
-            path: 'company',
-            select: { createdAt: 0, updatedAt: 0, __v: 0 },
-            populate: {
-                path: 'country',
-                select: { createdAt: 0, updatedAt: 0, __v: 0 }
+        populateFields: [
+            {
+                path: 'company',
+                select: { createdAt: 0, updatedAt: 0, __v: 0 },
+                populate: {
+                    path: 'country',
+                    select: { createdAt: 0, updatedAt: 0, __v: 0 }
+                } 
+            }, 
+            {
+                path: 'profileImage',
+                select: { url: 1 }
             }
-        }
+        ]
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -94,7 +105,7 @@ async function updateCustomer(req, res) {
         fileField: 'profileImage'
     }
     try {
-        await validation.body(Customer, req.body);
+        // await validation.body(Customer, req.body);
         const resp = await dataBase.updateCollectionId(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {

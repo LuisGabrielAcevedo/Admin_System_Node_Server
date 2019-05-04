@@ -53,7 +53,7 @@ async function getCompanies(req, res) {
 				select: { name: 1, _id: 1 }
 			},
 			{
-				path: 'locals',
+				path: 'stores',
 				select: { name: 1, _id: 1 }
 			},
 			{

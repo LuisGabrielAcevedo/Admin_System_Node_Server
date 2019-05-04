@@ -7,6 +7,7 @@ const CompanySchema = Schema({
     country: {type: Schema.ObjectId, ref: 'Country', required: true },
     logo: { type: Schema.ObjectId, ref: 'Image', default: null},
     profileImage: { type: Schema.ObjectId, ref: 'Image', default: null},
+    license: {type: Schema.ObjectId, ref: 'License', default: null },
     currencies: [{ type: String, default: null }],
     admin: { type: Schema.ObjectId, ref: 'User', default: null },
     stores: [{ type: Schema.ObjectId, ref: 'Store', default: [] }],

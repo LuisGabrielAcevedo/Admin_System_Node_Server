@@ -1,5 +1,5 @@
 const express = require('express');
-const rolCtrl = require('../controllers/rol');
+const rolCtrl = require('../controllers/role');
 const api = express.Router();
 const authMiddleware = require('../middlewares/auth');
 

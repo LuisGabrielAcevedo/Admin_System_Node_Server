@@ -1,5 +1,6 @@
 // Modelos
-const Local = require('../models/store');
+const Store = require('../models/store');
+const StoreConfigurations = require('../models/storeConfigurations');
 const Company = require('../models/company');
 // Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
@@ -9,61 +10,59 @@ const queryMethods = require('../services/query');
 const validation = require('../services/validation');
 
 // 0. Funcion de prueba del controlador
-function local(req, res) {
-    res.status(200).send({ msg: 'Controlador de locales funcionando' })
+function store(req, res) {
+    res.status(200).send({ msg: 'Store controller works' })
 }
 
-// 1. Guardar local
-async function saveLocal(req, res) {
-    const payload = {
-        repeatedFields: ['name'],
-        requestData: req.body,
-        collection: Local
-    }
+// 1. Guardar una tienda
+async function saveStore(req, res) {
     try {
-        await validation.body(Local, req.body, 'POST');
-        const resp = await dataBase.saveCollection(payload);
-        const payloadToSearchCompany = {
-            id: req.body.company,
-            collection: Company
-        }
-        const respSearchCompany = await dataBase.findCollectionId(payloadToSearchCompany);
-        const locals = respSearchCompany.data.locals;
-        locals.push(resp.data._id);
-        const payloadToUpdateCompany = {
-            id: req.body.company,
+        await validation.body(Store, req.body, 'POST');
+        const storeConfigurationsResp = await dataBase.saveCollection({
+            requestData: req.body,
+            collection: StoreConfigurations
+        });
+        req.body.storeConfigurations = storeConfigurationsResp.data._id;
+        const storeResp = await dataBase.saveCollection({
+            requestData: req.body,
+            collection: Store
+        });
+        const companyResp = await dataBase.pushCollectionId({
+            id: storeResp.data.company,
             collection: Company,
-            requestData: {
-                locals: locals
-            }
-        }
-        const respUpdateCompany = await dataBase.updateCollectionId(payloadToUpdateCompany);
-        return res.status(resp.code).send(resp);
+            push: { stores: storeResp.data._id }
+        });
+        return res.status(storeResp.code).send(storeResp);
     } catch (err) {
         return res.status(err.code).send(err);
     }
 }
 
-// 2. Obtener Locales
-async function getLocals(req, res) {
+// 2. Obtener tiendas
+async function getStores(req, res) {
     const searchFields = ['name'];
     const query = req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
-        collection: Local,
+        collection: Store,
         query: query,
-        sort: req.query.sort ? req.query.sort : 'createdAt',
+        sort: req.query.sort ? req.query.sort : '-updatedAt',
         page: req.query.page ? Number(req.query.page) : 1,
         itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
         unselectFields: ['__v'],
-        populateFields: [{
-            path: 'application',
-            select: { name: 1, _id: 1 }
-        },
-        {
-            path: 'company',
-            select: { name: 1, _id: 1, profileImage: 1 }
-        }
+        populateFields: [
+            {
+                path: 'application',
+                select: { name: 1, _id: 1 }
+            },
+            {
+                path: 'company',
+                select: { name: 1, _id: 1, profileImage: 1 }
+            },
+            {
+                path: 'storeConfigurations',
+                select: { __v: 0 }
+            }
         ]
     }
     try {
@@ -74,11 +73,11 @@ async function getLocals(req, res) {
     }
 }
 
-// 3. Buscar un local
-async function findLocal(req, res) {
+// 3. Buscar una tienda
+async function findStore(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Local,
+        collection: Store,
         unselectFields: ['__v'],
         populateFields: [{
             path: 'application',
@@ -98,15 +97,15 @@ async function findLocal(req, res) {
     }
 }
 
-// 4. Actualizar un local
-async function updateLocal(req, res) {
+// 4. Actualizar una tienda
+async function updateStore(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Local,
+        collection: Store,
         requestData: req.body
     }
     try {
-        await validation.body(Local, req.body);
+        await validation.body(Store, req.body);
         const resp = await dataBase.updateCollectionId(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
@@ -114,11 +113,11 @@ async function updateLocal(req, res) {
     }
 }
 
-// 5. Borrar un local
-async function removeLocal(req, res) {
+// 5. Borrar una tienda
+async function removeStore(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Local
+        collection: Store
     }
     try {
         const resp = await dataBase.removeCollectionId(payload);
@@ -128,16 +127,16 @@ async function removeLocal(req, res) {
     }
 }
 
-// 6. Obtener locales buscador
+// 6. Obtener tiendas buscador
 async function simpleSearch(req, res) {
     const searchFields = ['name'];
     const query = req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
-        collection: Local,
+        collection: Store,
         query: query,
-        unselectFields: ['__v', 'password'],
-        sort: req.query.sort ? req.query.sort : 'createdAt'
+        unselectFields: ['__v'],
+        sort: req.query.sort ? req.query.sort : '-updatedAt'
     }
     try {
         const resp = await dataBase.simpleSearch(payload);
@@ -148,11 +147,11 @@ async function simpleSearch(req, res) {
 }
 
 module.exports = {
-    local,
-    saveLocal,
-    getLocals,
-    findLocal,
-    updateLocal,
-    removeLocal,
+    store,
+    saveStore,
+    getStores,
+    findStore,
+    updateStore,
+    removeStore,
     simpleSearch
 }
