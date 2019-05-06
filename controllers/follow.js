@@ -37,6 +37,24 @@ async function findFollows(req, res) {
             page: req.query.page ? Number(req.query.page) : 1,
             itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
             unselectFields: ['__v'],
+            populateFields: [
+            {
+                path: 'followed',
+                select: { _id: 1, email: 1, profileImage: 1, firstName: 1, lastName: 1},
+                populate: {
+                    path: 'profileImage',
+                    select: { url: 1 }
+                }
+            },
+            {
+                path: 'following',
+                select: { _id: 1, email: 1, profileImage: 1, firstName: 1, lastName: 1},
+                populate: {
+                    path: 'profileImage',
+                    select: { url: 1 }
+                }
+            }
+        ]
         });
         return res.status(resp.code).send(resp);
     } catch (err) {

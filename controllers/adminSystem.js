@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 // Constantes de la base de datos para recrear informacion
 const dataFile = require('../dataBaseData/data');
 // Metodos de base de datos
@@ -17,6 +18,7 @@ const Company = require('../models/company');
 const User = require('../models/user');
 const UserConfigurations = require('../models/userConfigurations');
 const UserInformation = require('../models/userInformation');
+const Image = require('../models/image');
 
 // Metodos de usuario
 const userMethods = require('../services/user');
@@ -88,26 +90,28 @@ function paymentMethods(req, res) {
 }
 // 7. Generar usuarios 
 async function randomUsers(req, res) {
-    saveUsersByApplication("5cca3fcb84ec060ef6e51de9");
-    const companiesIds = ["5cca3fcb84ec060ef6e51de8", "5cca3fcb84ec060ef6e51de9", "5cca46a084ec060ef6e51deb"];
+    const applicationId = mongoose.Types.ObjectId("5cca3732a342520bbcd24563");
+    saveUsersByApplication(applicationId);
     Company.find({}, (err, dataBaseResp) => {
         dataBaseResp.forEach(company => {
             getRandomUser().then(user => {
-                const  userToSave = {
-                        email: user.email,
-                        password: '123456',
-                        firstName: user.name.first,
-                        lastName: user.name.last,
-                        company: company._id,
-                        application: company.application._id
-                    };
-                    saveUser(userToSave)
-                        .then(resp => {
-                            console.log('user saved');
-                        })
-                        .catch(e => {
-                            console.log(e);
-                        })
+                const applicationId = mongoose.Types.ObjectId(company.application._id);
+                const userToSave = {
+                    email: user.email,
+                    password: '123456',
+                    firstName: user.name.first,
+                    lastName: user.name.last,
+                    company: company._id,
+                    application: applicationId,
+                    url: user.picture.large
+                };
+                saveUser(userToSave)
+                    .then(resp => {
+                        console.log('user saved');
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    })
             });
         })
         res.status(200).send({
@@ -119,7 +123,7 @@ async function randomUsers(req, res) {
 }
 
 function saveUsersByApplication(application) {
-    const tryNumer = [1, 2, 3];
+    const tryNumer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
     tryNumer.forEach(() => {
         getRandomUser().then(user => {
             userToSave = {
@@ -127,15 +131,16 @@ function saveUsersByApplication(application) {
                 password: '123456',
                 firstName: user.name.first,
                 lastName: user.name.last,
-                application: application
+                application: application,
+                url: user.picture.large
             };
             saveUser(userToSave)
-                // .then(resp => {
-                //     console.log('user saved');
-                // })
-                // .catch(e => {
-                //     console.log(e);
-                // })
+                .then(resp => {
+                    console.log('user saved');
+                })
+                .catch(e => {
+                    console.log(e);
+                })
         })
     })
 }
@@ -161,18 +166,26 @@ function saveUser(user) {
                         requestData: user,
                         collection: UserInformation
                     }).then(resp3 => {
-                        user.userConfigurations = resp2.data._id;
-                        user.userInformation = resp3.data._id;
                         dataBase.saveCollection({
                             requestData: user,
-                            collection: User
+                            collection: Image
+                        }).then(resp4 => {
+                            user.profileImage = resp4.data._id;
+                            user.userConfigurations = resp2.data._id;
+                            user.userInformation = resp3.data._id;
+                            dataBase.saveCollection({
+                                requestData: user,
+                                collection: User
+                            })
+                                .then(resp5 => {
+                                    resolve(resp5);
+                                })
+                                .catch(err5 => {
+                                    reject(err5);
+                                })
+                        }).catch(err4 => {
+                            reject(err4);
                         })
-                            .then(resp4 => {
-                                resolve(resp4);
-                            })
-                            .catch(err4 => {
-                                reject(err4);
-                            })
                     }).catch(err3 => {
                         reject(err3);
                     })
