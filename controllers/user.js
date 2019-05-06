@@ -46,12 +46,6 @@ async function saveUser(req, res) {
 
 // 2. Obtener Usuarios
 async function getUsers(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-
     const searchFields = ['email', 'lastName', 'firstName'];
 
     const query = req.query.search || req.query.filters ?
@@ -188,11 +182,6 @@ async function getImage(req, res) {
 
 // 7. Obtener users buscador
 async function simpleSearch(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
     const searchFields = ['email', 'lastName', 'firstName'];
     const query = req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
