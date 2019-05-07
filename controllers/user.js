@@ -205,7 +205,7 @@ async function simpleSearch(req, res) {
             },
             {
                 path: 'application',
-                select: { name: 1, _id: 1 }
+                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0, description: 0 }
             },
             {
                 path: 'profileImage',
