@@ -204,6 +204,10 @@ async function simpleSearch(req, res) {
                 select: { name: 1, _id: 1 }
             },
             {
+                path: 'application',
+                select: { name: 1, _id: 1 }
+            },
+            {
                 path: 'profileImage',
                 select: { url: 1 }
             }
