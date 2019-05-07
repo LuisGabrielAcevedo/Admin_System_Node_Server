@@ -197,15 +197,11 @@ async function simpleSearch(req, res) {
         populateFields: [
             {
                 path: 'company',
-                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 },
+                select: { name: 1, _id: 1 }
             },
             {
                 path: 'role',
-                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 },
-            },
-            {
-                path: 'application',
-                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0, description: 0 }
+                select: { name: 1, _id: 1 }
             },
             {
                 path: 'profileImage',
