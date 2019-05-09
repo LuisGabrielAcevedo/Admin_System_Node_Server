@@ -20,6 +20,8 @@ const UserConfigurations = require('../models/userConfigurations');
 const UserInformation = require('../models/userInformation');
 const Image = require('../models/image');
 const Product = require('../models/product/product');
+const Customer = require('../models/customer');
+const CustomerInformation = require('../models/userInformation');
 
 // Metodos de usuario
 const userMethods = require('../services/user');
@@ -301,6 +303,94 @@ function mercadoLibreApi(value) {
     })
 }
 
+function randomCustomers(req, res) {
+    saveCustomers({
+        // application: '5cca2327062c7606d986e719',
+        // company: '5cca3fcb84ec060ef6e51de7'
+        application: '5cca22d05084d906c1ffb022',
+        company: '5ccd969611e62a5eb000b0dd'
+    })
+    .then(resp => {
+        res.status(200).send({
+            status: 'OK',
+            code: 200,
+            msg: 'Clientes creados'
+        })
+    })
+    .catch(err => {
+        console.log(err);
+    })
+}
+
+function saveCustomers(payload) {
+    return new Promise((resolve, reject) => {
+        const tryNumer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+        let cont = 0;
+        tryNumer.forEach(() => {
+            getRandomUser().then(customer => {
+                customerToSave = {
+                    email: customer.email,
+                    password: '123456',
+                    firstName: customer.name.first,
+                    lastName: customer.name.last,
+                    application: payload.application,
+                    company: payload.company,
+                    url: customer.picture.large
+                };
+                saveCustomer(customerToSave)
+                .then(resp => {
+                    cont++;            
+                    if (cont === tryNumer.length) {
+                        resolve();
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+            })
+        })
+    })
+}
+
+function saveCustomer(customer){
+    return new Promise((resolve, reject) => {
+        userMethods.encryptPassword(customer.password)
+            .then(resp1 => {
+                customer.password = resp1;
+                    dataBase.saveCollection({
+                        requestData: customer,
+                        collection: CustomerInformation
+                    }).then(resp3 => {
+                        dataBase.saveCollection({
+                            requestData: customer,
+                            collection: Image
+                        }).then(resp4 => {
+                            customer.profileImage = resp4.data._id;
+                            customer.customerInformation = resp3.data._id;
+                            dataBase.saveCollection({
+                                requestData: customer,
+                                collection: Customer
+                            })
+                                .then(resp5 => {
+                                    console.log('customer saved');
+                                    resolve(resp5);
+                                })
+                                .catch(err5 => {
+                                    reject(err5);
+                                })
+                        }).catch(err4 => {
+                            reject(err4);
+                        })
+                    }).catch(err3 => {
+                        reject(err3);
+                    })
+            })
+            .catch(err1 => {
+                reject(err1);
+            })
+    })
+}
+
 module.exports = {
     adminSystemServer,
     adminSystem,
@@ -310,5 +400,6 @@ module.exports = {
     units,
     paymentMethods,
     randomUsers,
-    randomProducts
+    randomProducts,
+    randomCustomers
 }

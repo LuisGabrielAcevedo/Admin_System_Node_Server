@@ -159,7 +159,17 @@ async function simpleSearch(req, res) {
         collection: Customer,
         query: query,
         unselectFields: ['__v', 'password'],
-        sort: req.query.sort ? req.query.sort : 'createdAt'
+        sort: req.query.sort ? req.query.sort : 'createdAt',
+        populateFields: [
+            {
+                path: 'profileImage',
+                select: { url: 1 }
+            },
+            {
+                path: 'customerInformation',
+                select: { createdAt: 0, updatedAt: 0, __v: 0  }
+            }
+        ]
     }
     try {
         const resp = await dataBase.simpleSearch(payload);

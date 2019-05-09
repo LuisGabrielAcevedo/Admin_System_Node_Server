@@ -13,5 +13,7 @@ api.get('/products', authMiddleware.authMiddlewareFunction, productCtrl.getProdu
 api.put('/products/:id', authMiddleware.authMiddlewareFunction, productCtrl.updateProduct);
 // 4. Obtener la imagen del producto
 api.get('/products/image/:id/:file', productCtrl.getImage);
+// 6. Obtener productos buscador
+api.get('/products/search/all-list', authMiddleware.authMiddlewareFunction, productCtrl.simpleSearch);
 
 module.exports = api;

@@ -20,6 +20,8 @@ api.get('/payment-methods', adminSystemCtrl.paymentMethods);
 api.post('/random-users', adminSystemCtrl.randomUsers);
 // 8. Generar productos
 api.post('/random-products', adminSystemCtrl.randomProducts);
+// 8. Generar customers
+api.post('/random-customers', adminSystemCtrl.randomCustomers);
 
 
 module.exports = api;
