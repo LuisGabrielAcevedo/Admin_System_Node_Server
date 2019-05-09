@@ -7,7 +7,7 @@ const dataBase = require('../services/dataBaseMethods');
 const apiProductTypesData = require('../data/apiProductType');
 // Coins
 const coinsData = require('../data/coins');
-// Units 
+// Units
 const unitsData = require('../data/unit');
 // PaymentMethods
 const paymentMethodsData = require('../data/paymentMethod');
@@ -19,6 +19,7 @@ const User = require('../models/user');
 const UserConfigurations = require('../models/userConfigurations');
 const UserInformation = require('../models/userInformation');
 const Image = require('../models/image');
+const Product = require('../models/product/product');
 
 // Metodos de usuario
 const userMethods = require('../services/user');
@@ -88,7 +89,7 @@ function paymentMethods(req, res) {
         data: paymentMethodsData
     })
 }
-// 7. Generar usuarios 
+// 7. Generar usuarios
 async function randomUsers(req, res) {
     const applicationId = mongoose.Types.ObjectId("5cca3732a342520bbcd24563");
     saveUsersByApplication(applicationId);
@@ -199,6 +200,106 @@ function saveUser(user) {
     })
 }
 
+// 8. Generar productos
+function randomProducts(req, res) {
+    const musicalInstruments = {
+        products: [
+            'guitarra electrica ibanez',
+            'teclado korg',
+            'teclado roland',
+            'bateria yamaha',
+            'guitarra yamaha',
+            'bajo yamaha'
+        ],
+        application: '5cca2327062c7606d986e719',
+        company: '5cca3fcb84ec060ef6e51de7'
+    }
+    const foodFast = {
+        products: [
+            'pizza napolitana',
+            'hamburguesa',
+            'coca cola',
+        ],
+        application: '5cca22d05084d906c1ffb022',
+        company: '5ccd969611e62a5eb000b0dd'
+    }
+    Promise.all([
+        saveProducts(musicalInstruments),
+        saveProducts(foodFast)
+    ])
+        .then(resp => {
+            res.status(200).send({
+                status: 'OK',
+                code: 200,
+                msg: 'Productos creados'
+            })
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+function saveProducts(payload) {
+    return new Promise((resolve, reject) => {
+        let cont1 = 0
+        payload.products.forEach(value => {
+            mercadoLibreApi(value)
+                .then(resp => {
+                    let cont2 = 0
+                    resp.forEach(product => {
+                        let newProduct = {
+                            name: product.title,
+                            application: payload.application,
+                            company: payload.company,
+                            description: '',
+                            url: product.thumbnail,
+                            price: product.price,
+                            unit: 'unity',
+                            totalAvailable: product.sold_quantity
+                        }
+                        dataBase.saveCollection({
+                            requestData: newProduct,
+                            collection: Image
+                        })
+                            .then(resp1 => {
+                                newProduct.profileImage = resp1.data._id;
+                                dataBase.saveCollection({
+                                    requestData: newProduct,
+                                    collection: Product
+                                })
+                                    .then(resp2 => {
+                                        cont2++;
+                                        if (cont2 === resp.length) {
+                                            cont1++;
+                                        }
+                                        if (cont1 === payload.products.length) {
+                                            resolve(resp);
+                                        }
+                                    })
+                                    .catch(err2 => {
+                                        console.log(err2);
+                                    })
+
+                            })
+                            .catch(err1 => {
+                                console.log(err1);
+                            })
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        })
+    })
+}
+
+function mercadoLibreApi(value) {
+    return new Promise((resolve, reject) => {
+        Axios.get(`https://api.mercadolibre.com/sites/MLA/search?q=:${value}&limit=2`).then(resp => {
+            resolve(resp.data.results);
+        })
+    })
+}
 
 module.exports = {
     adminSystemServer,
@@ -208,5 +309,6 @@ module.exports = {
     coins,
     units,
     paymentMethods,
-    randomUsers
+    randomUsers,
+    randomProducts
 }

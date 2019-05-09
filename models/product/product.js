@@ -3,40 +3,30 @@ const Schema = mongoose.Schema;
 
 const ProductSchema = Schema({
     name: { type: String, required: true },
-    applicationCode: { type: String, required: true },
+    application: { type: Schema.ObjectId, ref: 'Application', required: true },
     company: { type: Schema.ObjectId, ref: 'Company', required: true },
     type: { type: Schema.ObjectId, ref: 'ProductType', default: null },
     category: { type: Schema.ObjectId, ref: 'ProductCategory', default: null },
     description: { type: String, default: null },
     details: { type: String, default: null },
-    createdAt: { type: String, default: null },
-    updatedAt: { type: String, default: null },
-    deletedAt: { type: String, default: null },
-    profileImage: {
-        fileName: { type: String, default: null },
-        url: { type: String, default: 'https://www.taiwaniot.com.tw/wp-content/uploads/2016/06/product-default.png'},
-        directory: { type: String, default: null }
-    },
-    images: [
-        {
-            fileName: { type: String, default: null },
-            url: { type: String, default: null },
-            directory: { type: String, default: null }
-        }
-    ],
+    profileImage: { type: Schema.ObjectId, ref: 'Image', default: null },
+    images: [{ type: Schema.ObjectId, ref: 'Image', default: null }],
     brand: { type: Schema.ObjectId, ref: 'Brand', default: null },
     active: { type: Boolean, default: true },
-    locals: [{ type: Schema.ObjectId, ref: 'Local', default: [] }],
-    // boxes: [{ type: Schema.ObjectId, ref: 'Box', default: [] }],
+    onlineSale: { type: Boolean, default: true },
+    stores: [{ type: Schema.ObjectId, ref: 'Store', default: [] }],
+    boxes: [{ type: Schema.ObjectId, ref: 'Box', default: [] }],
     price: { type: Number, default: 0 },
     unit: { type: String, default: null },
-    pricePerLocal: { type: Boolean, default: false },
-    pricePerLocalsData: [{ type: Schema.ObjectId, ref: 'PricePerLocal', default: [] }],
+    pricePerStore: { type: Boolean, default: false },
+    pricePerStoresData: [{ type: Schema.ObjectId, ref: 'PricePerStore', default: [] }],
     tax: { type: Number, default: null },
     totalAvailable: { type: Number, default: 0 },
-    // discount: { type: Schema.ObjectId, ref: 'DiscountPerProduct', default: null },
     vendor: { type: Schema.ObjectId, ref: 'Vendor', default: null },
-    characteristics: { type: Object, default: null }
+    characteristics: { type: Object, default: null },
+    createdAt: { type: String, default: null },
+    updatedAt: { type: String, default: null },
+    deletedAt: { type: String, default: null }
 });
 
 module.exports = mongoose.model('Product', ProductSchema);

@@ -54,19 +54,23 @@ async function getProducts(req, res) {
         populateFields: [
             {
                 path: 'category',
-                select: { name: 1, _id: 1 }
+                select: { name: 1 }
             },
             {
                 path: 'company',
-                select: { name: 1, _id: 1 }
+                select: { name: 1 }
             },
             {
                 path: 'brand',
-                select: { name: 1, _id: 1 }
+                select: { name: 1 }
             },
             {
                 path: 'type',
-                select: { name: 1, _id: 1 }
+                select: { name: 1 }
+            },
+            {
+                path: 'profileImage',
+                select: { url: 1 }
             }
         ],
         requiredFields: ['name', 'company', 'applicationCode', 'price', 'unit'],

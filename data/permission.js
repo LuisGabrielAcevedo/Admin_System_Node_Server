@@ -43,6 +43,10 @@ const permissionData = [
             'put_permissions',
             'get_permissions',
             'delete_permissions',
+            'post_follows',
+            'put_follows',
+            'get_follows',
+            'delete_follows'
         ]
     },
     {
@@ -83,11 +87,7 @@ const permissionData = [
             'post_vendors',
             'put_vendors',
             'get_vendors',
-            'delete_vendors',
-            'post_follows',
-            'put_follows',
-            'get_follows',
-            'delete_follows'
+            'delete_vendors'
         ]
     },
     {
