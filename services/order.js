@@ -149,6 +149,10 @@ async function findOrdersAction(req) {
             {
                 path: 'customer',
                 select: { firstName: 1, lastName: 1, profileImage: 1, _id: 1 },
+            },
+            {
+                path: 'company',
+                select: { name: 1 }
             }
         ]
     }
@@ -156,6 +160,31 @@ async function findOrdersAction(req) {
         const resp = await dataBase.findCollection(payload);
         return resp;
     } catch (e) {
+        return e;
+    }
+}
+
+async function paidOrderAction(req) {
+    try {
+        const order = await calculateAccountsAction(req.params.id);
+        order.paymentMethods = req.body.paymentMethods;
+        order.status = 'PAID';
+        const updateOrder = await dataBase.updateCollectionId({
+            id: order.id,
+            collection: Order,
+            requestData: order
+        })
+        return updateOrder;
+        
+    } catch(e) {
+        return e;
+    }
+}
+
+async function cancelOrderAction(req) {
+    try {
+        console.log(req.params.id);
+    } catch(e) {
         return e;
     }
 }
@@ -210,5 +239,7 @@ module.exports = {
     deleteOrderItemAction,
     updateOrderItemAction,
     findOrderAction,
-    findOrdersAction
+    findOrdersAction,
+    paidOrderAction,
+    cancelOrderAction
 }

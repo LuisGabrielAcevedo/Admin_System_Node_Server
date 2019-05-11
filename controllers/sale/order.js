@@ -41,11 +41,35 @@ async function findOrders(req, res) {
     }
 }
 
+// 6. Pagar orden 
+async function paidOrder(req, res) {
+    try {
+        const resp = await orderService.paidOrderAction(req);
+        return res.status(resp.code).send(resp);
+    }
+    catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
+
+// 7. Anular orden
+async function cancelOrder(req, res) {
+    try {
+        const resp = await orderService.cancelOrderAction(req);
+        return res.status(resp.code).send(resp);
+    }
+    catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
+
 module.exports = {
     order,
     saveOrder,
     deleteOrder,
     updateOrder,
     findOrder,
-    findOrders
+    findOrders,
+    paidOrder,
+    cancelOrder
 }
