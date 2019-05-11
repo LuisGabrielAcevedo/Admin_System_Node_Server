@@ -19,5 +19,7 @@ api.delete('/permissions/:id', authMiddleware.authMiddlewareFunction, permission
 api.post('/permissions/update', authMiddleware.authMiddlewareFunctionSecondAction, permissionCtrl.updatePermissions);
 // 7. Obtener administradres buscador
 api.get('/permissions/search/all-list', authMiddleware.authMiddlewareFunction, permissionCtrl.simpleSearch);
+// 8. Actualizar varios permisos
+api.put('/permissions', authMiddleware.authMiddlewareFunction, permissionCtrl.updateManyPermissions);
 
 module.exports = api;

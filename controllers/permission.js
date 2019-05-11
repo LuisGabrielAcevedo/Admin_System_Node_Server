@@ -150,6 +150,21 @@ async function simpleSearch(req, res) {
     }
 }
 
+// 8. Actualizar varios permisos
+async function updateManyPermissions(req, res) {
+    const payload = {
+        collection: Permission,
+        ids: req.body.permissions,
+        requestData: { applications: req.body.applications }
+    }
+    try {
+        const resp = await dataBase.updateManyIds(payload);
+        return res.status(resp.code).send(resp)
+    } catch (e) {
+        return res.status(err.code).send(err);
+    }
+}
+
 module.exports = {
     permission,
     savePermission,
@@ -158,5 +173,6 @@ module.exports = {
     updatePermission,
     removePermission,
     updatePermissions,
-    simpleSearch
+    simpleSearch,
+    updateManyPermissions
 }

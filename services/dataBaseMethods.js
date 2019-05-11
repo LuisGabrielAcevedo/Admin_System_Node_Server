@@ -60,7 +60,7 @@ function saveCollection(payload) {
 }
 
 function save(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `save_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `save_${payload.collection.modelName.toLowerCase()}_successs`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `save_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		let objToSave = new payload.collection();
@@ -92,7 +92,7 @@ function save(payload) {
 }
 
 function findCollection(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `find_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `find_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `find_${payload.collection.modelName.toLowerCase()}_error`;
 	let tableFields = ['_id'];
 	if (payload.tableFields) {
@@ -206,7 +206,7 @@ function findByIdPromise(collection, id, count) {
 }
 
 function simpleSearch(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `find_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `find_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `find_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		// 1. Validar query
@@ -245,7 +245,7 @@ function simpleSearch(payload) {
 }
 
 function findCollectionId(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `findbyid_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `findbyid_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `findbyid_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		// 1. Validar coleccion
@@ -300,7 +300,7 @@ function findCollectionId(payload) {
 }
 
 function pushCollectionId(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `update_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `update_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `update_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		// 1. Validar que venga el campo id
@@ -339,7 +339,7 @@ function pushCollectionId(payload) {
 }
 
 function pullCollectionId(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `delete_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		// 1. Validar que venga el campo id
@@ -378,7 +378,7 @@ function pullCollectionId(payload) {
 }
 
 function updateCollectionId(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `update_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `update_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `update_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		// 1. Validar que venga el campo id
@@ -475,8 +475,33 @@ function updateCollectionId(payload) {
 	});
 }
 
+function updateManyIds(payload) {
+	const msgSuccess = payload.successMessage ? payload.successMessage : `updated_ids_${payload.collection.modelName.toLowerCase()}_success`;
+	const msgError = payload.errorMessage ? payload.errorMessage : `updated_ids_${payload.collection.modelName.toLowerCase()}_error`;
+	return new Promise((resolve, reject) => {
+		payload.collection.update(
+			{ _id: { $in: payload.ids } },
+			{ $set: payload.requestData },
+			{ multi: true },
+			(err, dataBaseResp) => {
+				if (err)
+					return reject({
+						status: 'ERROR',
+						code: 500,
+						msg: msgError
+					});
+				return resolve({
+					status: 'OK',
+					code: 200,
+					msg: msgSuccess,
+					data: dataBaseResp
+				});
+			})
+	})
+}
+
 function removeCollectionId(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `delete_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		// 1. Validar coleccion
@@ -534,7 +559,7 @@ function removeCollectionId(payload) {
 }
 
 function removeCollection(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_collection_${payload.collection.modelName.toLowerCase()}_succes`;
+	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_collection_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `delete_collection_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		// 1. Validar coleccion
@@ -570,66 +595,6 @@ module.exports = {
 	removeCollection,
 	simpleSearch,
 	pushCollectionId,
-	pullCollectionId
+	pullCollectionId,
+	updateManyIds
 };
-
-
-
-// // 5. Validar extension
-// fileMethods
-// 	.validateFile(payload.id, payload.type, payload.files.file)
-// 	.then((fileExtensionResp) => {
-// 		// 6. Validar existencia del directorio
-// 		fileMethods
-// 			.verifyDirectory(fileExtensionResp.directory)
-// 			.then(() => {
-// 				// 7. Verificar si el archivo anterior existe
-// 				if (dataBaseResp[payload.fileField].fileName) {
-// 					const oldPath = `${fileExtensionResp.path}/${payload.id}/${dataBaseResp[
-// 						payload.fileField
-// 					].fileName}`;
-// 					// 8. Eliminar archivo anterior
-// 					fs.exists(path.normalize(oldPath), function (exists) {
-// 						if (exists) {
-// 							fs.unlink(path.normalize(oldPath));
-// 						}
-// 					});
-// 				}
-// 				// 9. Asignar nuevo archivo al objeto
-// 				dataBaseResp[payload.fileField].fileName = fileExtensionResp.fileName;
-// 				dataBaseResp[payload.fileField].url = fileExtensionResp.url;
-// 				dataBaseResp[payload.fileField].directory = fileExtensionResp.directory;
-// 				// 10 . Actualizar campos en el objeto
-// 				for (let element in payload.requestData) {
-// 					if (payload.requestData.hasOwnProperty(element))
-// 						dataBaseResp[element] = payload.requestData[element];
-// 				}
-// 				// 11. Setear el momento de la actualizacion
-// 				dataBaseResp['updatedAt'] = moment().toISOString();
-// 				// 12. Mover archivo al directorio
-// 				let newPath = `${fileExtensionResp.directory}/${fileExtensionResp.fileName}`;
-// 				payload.files.file.mv(path.normalize(newPath), (err) => {
-// 					if (err)
-// 						reject({
-// 							status: 'WARNING',
-// 							code: 422,
-// 							msg: `error_move_file ${path.normalize(newPath)}`
-// 						});
-
-// 				});
-// 			})
-// 			.catch((fileDirectoryError) => {
-// 				reject({
-// 					status: 'WARNING',
-// 					code: 422,
-// 					msg: fileDirectoryError.msg
-// 				});
-// 			});
-// 	})
-// 	.catch((fileExtensionError) => {
-// 		reject({
-// 			status: 'WARNING',
-// 			code: 422,
-// 			msg: fileExtensionError.msg
-// 		});
-// 	});
