@@ -41,7 +41,18 @@ async function findOrders(req, res) {
     }
 }
 
-// 6. Pagar orden 
+// 6. Buscar ordenes buscador
+async function findOrdersSearch(req, res) {
+    try {
+        const resp = await orderService.findOrdersSearchAction(req);
+        return res.status(resp.code).send(resp);
+    }
+    catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
+
+// 7. Pagar orden 
 async function paidOrder(req, res) {
     try {
         const resp = await orderService.paidOrderAction(req);
@@ -52,7 +63,7 @@ async function paidOrder(req, res) {
     }
 }
 
-// 7. Anular orden
+// 8. Anular orden
 async function cancelOrder(req, res) {
     try {
         const resp = await orderService.cancelOrderAction(req);
@@ -71,5 +82,6 @@ module.exports = {
     findOrder,
     findOrders,
     paidOrder,
-    cancelOrder
+    cancelOrder,
+    findOrdersSearch
 }

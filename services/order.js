@@ -33,7 +33,7 @@ async function updateOrderAction(req) {
             collection: Order,
             requestData: req.body
         }
-    } 
+    }
     try {
         // await validation.body(OrderItem, req.body);
         const resp = req.params.id !== 'null' ? await dataBase.updateCollectionId(payload) : await dataBase.saveCollection(payload);
@@ -118,7 +118,12 @@ async function updateOrderItemAction(req) {
 }
 
 async function findOrderAction(req) {
-
+    try {
+        const resp = await dataBase.simpleSearch(payload);
+        return resp;
+    } catch (err) {
+        return e;
+    }
 }
 
 async function findOrdersAction(req) {
@@ -127,7 +132,7 @@ async function findOrdersAction(req) {
             company: req.tokenVerified.company
         }
     }
-    const searchFields = ['status','customer.firstName'];
+    const searchFields = ['status'];
     const query = req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
@@ -164,6 +169,48 @@ async function findOrdersAction(req) {
     }
 }
 
+async function findOrdersSearchAction(req) {
+    const searchFields = ['status', 'customer'];
+    const query = req.query.search || req.query.filters ?
+        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
+    const payload = {
+        collection: Order,
+        query: query,
+        sort: req.query.sort ? req.query.sort : '-updateAt',
+        page: req.query.page ? Number(req.query.page) : 1,
+        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
+        unselectFields: ['__v'],
+        populateFields: [
+            {
+                path: 'orderItems',
+                select: { quantity: 1, _id: 1 },
+                populate: {
+                    path: 'product',
+                    select: { name: 1, _id: 1, price: 1, profileImage: 1 },
+                }
+            },
+            {
+                path: 'customer',
+                select: { firstName: 1, lastName: 1, profileImage: 1, _id: 1 },
+            },
+            {
+                path: 'user',
+                select: { firstName: 1, lastName: 1, profileImage: 1, _id: 1 },
+            },
+            {
+                path: 'company',
+                select: { name: 1 }
+            }
+        ]
+    }
+    try {
+        const resp = await dataBase.simpleSearch(payload);
+        return resp;
+    } catch (err) {
+        return err;
+    }
+}
+
 async function paidOrderAction(req) {
     try {
         const order = await calculateAccountsAction(req.params.id);
@@ -175,8 +222,8 @@ async function paidOrderAction(req) {
             requestData: order
         })
         return updateOrder;
-        
-    } catch(e) {
+
+    } catch (e) {
         return e;
     }
 }
@@ -184,7 +231,7 @@ async function paidOrderAction(req) {
 async function cancelOrderAction(req) {
     try {
         console.log(req.params.id);
-    } catch(e) {
+    } catch (e) {
         return e;
     }
 }
@@ -241,5 +288,6 @@ module.exports = {
     findOrderAction,
     findOrdersAction,
     paidOrderAction,
-    cancelOrderAction
+    cancelOrderAction,
+    findOrdersSearchAction
 }

@@ -15,9 +15,11 @@ api.put('/orders/:id', authMiddleware.authMiddlewareFunction, orderCtrl.updateOr
 api.get('/orders/:id', orderCtrl.findOrder);
 // 5. Buscar todas las ordenes
 api.get('/orders', authMiddleware.authMiddlewareFunction, orderCtrl.findOrders);
-// 6. Pagar orden 
+// 6. Buscar ordenes search
+api.get('/orders/search/all-list', authMiddleware.authMiddlewareFunction, orderCtrl.findOrdersSearch);
+// 7. Pagar orden 
 api.post('/orders/:id/paid', authMiddleware.authMiddlewareFunction, orderCtrl.paidOrder);
-// 7. Anular orden 
+// 8. Anular orden 
 api.put('/orders/:id/cancel', authMiddleware.authMiddlewareFunction, orderCtrl.cancelOrder);
 
 
