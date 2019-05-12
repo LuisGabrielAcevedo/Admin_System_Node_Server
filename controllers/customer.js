@@ -69,6 +69,10 @@ async function getCustomers(req, res) {
                 select: { url: 1 }
             },
             {
+                path: 'application',
+                select: { name: 1 }
+            },
+            {
                 path: 'customerInformation',
                 select: { createdAt: 0, updatedAt: 0, __v: 0  }
             }

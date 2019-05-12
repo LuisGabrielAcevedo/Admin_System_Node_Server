@@ -169,6 +169,20 @@ async function simpleSearch(req, res) {
     }
 }
 
+// 3. Borrar marcas
+async function removeProduct(req, res) {
+    const payload = {
+        id: req.params.id,
+        collection: Product
+    }
+    try {
+        const resp = await dataBase.removeCollectionId(payload);
+        return res.status(resp.code).send(resp)
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
+
 
 module.exports = {
     saveProduct,
@@ -176,5 +190,6 @@ module.exports = {
     getProducts,
     updateProduct,
     getImage,
-    simpleSearch
+    simpleSearch,
+    removeProduct
 }
