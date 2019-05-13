@@ -172,6 +172,43 @@ async function simpleSearch(req, res) {
 	}
 }
 
+// 3. Buscar un usuario
+async function findCompany(req, res) {
+    const payload = {
+        id: req.params.id,
+        collection: Company,
+        unselectFields: ['__v'],
+        populateFields: [
+			{
+				path: 'country',
+				select: { name: 1, _id: 1 }
+			},
+			{
+				path: 'stores',
+				select: { name: 1, _id: 1 }
+			},
+			{
+				path: 'application',
+				select: { name: 1, _id: 1 }
+			},
+			{
+				path: 'admin',
+				select: { firstName: 1, _id: 1, profileImage: 1 }
+			},
+			{
+                path: 'profileImage',
+                select: { url: 1 }
+            }
+		]
+    }
+    try {
+        const resp = await dataBase.findCollectionId(payload);
+        return res.status(resp.code).send(resp);
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
+
 module.exports = {
 	company,
 	saveCompany,
@@ -180,5 +217,6 @@ module.exports = {
 	getCompanies,
 	getImage,
 	getLogo,
-	simpleSearch
+	simpleSearch,
+	findCompany
 };

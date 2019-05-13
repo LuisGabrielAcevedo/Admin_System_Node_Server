@@ -118,6 +118,10 @@ async function findUser(req, res) {
             {
                 path: 'profileImage',
                 select: { url: 1 }
+            },
+            {
+                path: 'application',
+                select: { name: 1, _id: 1 }
             }
         ]
     }
