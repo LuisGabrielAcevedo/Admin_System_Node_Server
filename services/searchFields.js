@@ -1,14 +1,9 @@
 function seachFileds(collection) {
-    let fields;
-    switch (collection) {
-        case 'User':
-            fields = ['email', 'lastName', 'firstName'];
-            break;
-        default:
-            fields = [];
-            break;
-    }
-    return fields;
+    return searchBy[collection]();
+}
+
+const searchBy = {
+    User: () =>  ['email', 'lastName', 'firstName']
 }
 
 module.exports = {

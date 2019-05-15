@@ -4,11 +4,11 @@
 const express = require('express');
 const app = express();
 
-// 2. Libreria para trabajar con archivos
+// 2. Files
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 
-// 3. Cargar rutas
+// 3. Routes
 const dataBaseRoutes = require('./routes/dataBase');
 const countryRoutes = require('./routes/country');
 const companyRoutes = require('./routes/company');
@@ -28,15 +28,14 @@ const vendorRoutes = require('./routes/product/vendor');
 const orderRoutes = require('./routes/sale/order');
 const orderItemRoutes = require('./routes/sale/orderItem');
 const followRoutes = require('./routes/follow');
+const postRoutes = require('./routes/post');
 
-// 4. Configuracion del body parser
+// 4. Body parser
 const body_parser = require('body-parser');
 app.use(body_parser.urlencoded({ extended: false }));
 app.use(body_parser.json());
 
-// 5. socket configuration
-
-// 6. Configuracion de las cabeceras para la comunicacion con angular
+// 5. Cors
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, pincode');
@@ -45,7 +44,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// 7. Rutas base de funcionamiento
+// 6. Routes
 app.use('/api/v1', dataBaseRoutes);
 app.use('/api/v1', countryRoutes);
 app.use('/api/v1', companyRoutes);
@@ -65,7 +64,6 @@ app.use('/api/v1', vendorRoutes);
 app.use('/api/v1', orderRoutes);
 app.use('/api/v1', orderItemRoutes);
 app.use('/api/v1', followRoutes);
+app.use('/api/v1', postRoutes);
 
-
-// 8. Exportar app
 module.exports = app;

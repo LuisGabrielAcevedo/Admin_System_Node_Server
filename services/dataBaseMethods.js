@@ -1,12 +1,7 @@
-// Libreria para registrar momento
 const moment = require('moment');
-// Libreria para la paginacion con mongoose
 const mongoosePagination = require('mongoose-pagination');
-// Metodos para trabajar con archivos
 const fileMethods = require('./fileMethods');
-// Libreria para acceder a la base de datos
 const mongoose = require('mongoose');
-// Librerias para trabajar con ficheros
 var path = require('path');
 var fs = require('fs');
 
@@ -17,13 +12,14 @@ function saveCollection(payload) {
 	}
 
 	return new Promise((resolve, reject) => {
-		// 1. Validar campos repetidos
+		// 1. Repeated files
 		if (payload.hasOwnProperty('repeatedFields')) {
 			payload.repeatedFields.forEach((element) => {
 				let obj = new Object();
 				obj[element] = payload.requestData[element];
 				repeatedValidateQuery.push(obj);
 			});
+
 			payload.collection.find({}).or(repeatedValidateQuery).exec((err, dataBaseResp) => {
 				if (err)
 					return reject({
@@ -39,22 +35,14 @@ function saveCollection(payload) {
 					});
 				} else {
 					save(payload)
-						.then((resp) => {
-							resolve(resp);
-						})
-						.catch((err) => {
-							reject(err);
-						});
+						.then((resp) => resolve(resp))
+						.catch((err) => reject(err));
 				}
 			});
 		} else {
 			save(payload)
-				.then((resp) => {
-					resolve(resp);
-				})
-				.catch((err) => {
-					reject(err);
-				});
+				.then((resp) => resolve(resp))
+				.catch((err) => reject(err));
 		}
 	});
 }
@@ -64,15 +52,15 @@ function save(payload) {
 	const msgError = payload.errorMessage ? payload.errorMessage : `save_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
 		let objToSave = new payload.collection();
-		// 1. Setear el momento de registro
+		// 1. Moment
 		objToSave['createdAt'] = moment().toISOString();
 		objToSave['updatedAt'] = moment().toISOString();
 
-		// 2. Asignar valores
+		// 2. Set values
 		for (let field in payload.requestData) {
 			objToSave[field] = payload.requestData[field];
 		}
-		// 3. Guardar objeto en la base de datos
+		// 3. Save
 		objToSave.save((err, dataBaseResp1) => {
 			if (err)
 				return reject({
@@ -94,14 +82,6 @@ function save(payload) {
 function findCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `find_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `find_${payload.collection.modelName.toLowerCase()}_error`;
-	let tableFields = ['_id'];
-	if (payload.tableFields) {
-		tableFields = payload.tableFields;
-	} else {
-		for (const tableField in mongoose.modelSchemas[payload.collection.modelName].obj) {
-			tableFields.push(tableField);
-		}
-	}
 	return new Promise((resolve, reject) => {
 		// 1. Validar coleccion
 		if (!payload.collection)
@@ -160,7 +140,6 @@ function findCollection(payload) {
 					totalPages: Math.ceil(totalItems / itemsPerPage),
 					currentPage: page,
 					itemsPerPage: itemsPerPage,
-					// tableFields: tableFields,
 					data: dataBaseResp
 				});
 			});

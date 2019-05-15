@@ -3,19 +3,19 @@ const rolCtrl = require('../controllers/role');
 const api = express.Router();
 const authMiddleware = require('../middlewares/auth');
 
-// 0. Prueba del controlador
-api.get('/roles/controller', rolCtrl.rol);
-// 1. Guardar rol
+// 0. Role controller
+api.get('/roles/controller', rolCtrl.role);
+// 1. Save role
 api.post('/roles', rolCtrl.saveRol);
-// 2. Obtener roles
-api.get('/roles', authMiddleware.authMiddlewareFunction, rolCtrl.getRoles);
-// 3. Buscar un rol
-api.get('/roles/:id',authMiddleware.authMiddlewareFunction, rolCtrl.findRol);
-// 4. Actualizar un rol
-api.put('/roles/:id', authMiddleware.authMiddlewareFunction, rolCtrl.updateRol);
-// 5. Borrar un rol
-api.delete('/roles/:id', authMiddleware.authMiddlewareFunction, rolCtrl.removeRol);
-// 6. Obtener roles sin paginacion
-api.get('/roles/search/all-list', authMiddleware.authMiddlewareFunction, rolCtrl.simpleSearch);
+// 2. Get roles
+api.get('/roles', authMiddleware.authMiddlewareFirstActionFunction, rolCtrl.getRoles);
+// 3. Get role
+api.get('/roles/:id',authMiddleware.authMiddlewareFirstActionFunction, rolCtrl.findRol);
+// 4. Update role
+api.put('/roles/:id', authMiddleware.authMiddlewareFirstActionFunction, rolCtrl.updateRol);
+// 5. Delete role
+api.delete('/roles/:id', authMiddleware.authMiddlewareFirstActionFunction, rolCtrl.removeRol);
+// 6. Get role search
+api.get('/roles/search/all-list', authMiddleware.authMiddlewareFirstActionFunction, rolCtrl.simpleSearch);
 
 module.exports = api;

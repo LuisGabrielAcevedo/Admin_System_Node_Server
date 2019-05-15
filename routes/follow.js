@@ -4,8 +4,8 @@ const api = express.Router();
 const authMiddleware = require('../middlewares/auth');
 
 api.get('/follows/controller', followCtrl.follow);
-api.post('/follows', authMiddleware.authMiddlewareFunction, followCtrl.saveFollow);
-api.get('/follows', authMiddleware.authMiddlewareFunction, followCtrl.findFollows);
-api.delete('/follows/:id', authMiddleware.authMiddlewareFunction, followCtrl.deleteFollow);
+api.post('/follows', authMiddleware.authMiddlewareFirstActionFunction, followCtrl.saveFollow);
+api.get('/follows', authMiddleware.authMiddlewareFirstActionFunction, followCtrl.findFollows);
+api.delete('/follows/:id', authMiddleware.authMiddlewareFirstActionFunction, followCtrl.deleteFollow);
 
 module.exports = api;

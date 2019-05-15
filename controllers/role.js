@@ -1,16 +1,13 @@
-// Modelos
 const Rol = require('../models/role');
-// Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
-// Metodos para manejar queries de busqueda
 const queryMethods = require('../services/query');
 
-
-// 0. Funcion de prueba del controlador
-function rol(req, res) {
-    res.status(200).send({ msg: 'Controlador de roles funcionando' });
+// 0. Roles controller
+function role(req, res) {
+    res.status(200).send({ msg: 'Roles controller works' });
 }
-// 1. Guardar un rol
+
+// 1. Save role
 async function saveRol(req, res) {
     const payload = {
         requiredFields: ['name', 'company', 'application'],
@@ -25,7 +22,7 @@ async function saveRol(req, res) {
     }
 }
 
-// 2. Obtener Roles
+// 2. Get roles
 async function getRoles(req, res) {
     if (req.tokenVerified.company) {
         req.query.filters = {
@@ -62,7 +59,7 @@ async function getRoles(req, res) {
     }
 }
 
-// 3. Buscar un rol
+// 3. Get role
 async function findRol(req, res) {
     const payload = {
         id: req.params.id,
@@ -90,14 +87,12 @@ async function findRol(req, res) {
     }
 }
 
-// 4. Actualizar rol
+// 4. Update role
 async function updateRol(req, res) {
     const payload = {
         id: req.params.id,
         collection: Rol,
-        requestData: req.body,
-        successMessage: 'Rol actualizado con exito',
-        errorMessage: 'Error actualizando rol'
+        requestData: req.body
     }
     try {
         const resp = await dataBase.updateCollectionId(payload);
@@ -108,13 +103,11 @@ async function updateRol(req, res) {
 }
 
 
-// 5. Borrar rol
+// 5. Delete role
 async function removeRol(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Rol,
-        successMessage: 'Rol eliminado con exito',
-        errorMessage: 'Error eliminando rol'
+        collection: Rol
     }
     try {
         const resp = await dataBase.removeCollectionId(payload);
@@ -124,7 +117,7 @@ async function removeRol(req, res) {
     }
 }
 
-// 6. Obtener administradores buscador
+// 6. Get roles search
 async function simpleSearch(req, res) {
     const searchFields = ['name'];
     const query = req.query.search || req.query.filters ?
@@ -144,7 +137,7 @@ async function simpleSearch(req, res) {
 }
 
 module.exports = {
-    rol,
+    role,
     saveRol,
     getRoles,
     findRol,

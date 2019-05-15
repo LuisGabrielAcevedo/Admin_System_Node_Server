@@ -2,25 +2,47 @@ const express = require('express');
 const userCtrl = require('../controllers/user');
 const api = express.Router();
 const authMiddleware = require('../middlewares/auth');
+const roleMiddleware = require('../middlewares/roles');
+const queryMiddleware = require('../middlewares/query');
+const compose = require('compose-middleware').compose;
 
-// 0. Prueba del controlador
+// 0. User controller
 api.get('/users/controller', userCtrl.user);
-// 1. Guardar usuario
-api.post('/users', authMiddleware.authMiddlewareFunction, userCtrl.saveUser);
-// 2. Obtener usuarios
-api.get('/users', authMiddleware.authMiddlewareFunction, userCtrl.getUsers);
-// 3. Buscar un usuario
-api.get('/users/:id', authMiddleware.authMiddlewareFunction, userCtrl.findUser);
-// 4. Actualizar un usuario
-api.put('/users/:id', authMiddleware.authMiddlewareFunction,userCtrl.updateUser);
-// 5. Borrar un usuario
-api.delete('/users/:id', authMiddleware.authMiddlewareFunction, userCtrl.removeUser);
-// 6. Obtener la imagen del usuario
+// 1. Save user
+api.post('/users', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction
+]), userCtrl.saveUser);
+// 2. Get users
+api.get('/users', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction,
+    queryMiddleware.queryMiddlewareFunction
+]), userCtrl.getUsers);
+// 3. Get user
+api.get('/users/:id', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction
+]), userCtrl.findUser);
+// 4. Update user
+api.put('/users/:id', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction
+]),userCtrl.updateUser);
+// 5. Delete user
+api.delete('/users/:id', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction
+]), userCtrl.removeUser);
+// 6. Get user image
 api.get('/users/image/:id/:file', userCtrl.getImage);
-// 7. Buscar usuarios sin paginacion
-api.get('/users/search/all-list', authMiddleware.authMiddlewareFunction, userCtrl.simpleSearch);
+// 7. Get users search
+api.get('/users/search/all-list', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction
+]), userCtrl.simpleSearch);
 // 8. Register user
-api.post('/users/register', authMiddleware.authMiddlewareFunction, userCtrl.userRegister);
+api.post('/users/register', userCtrl.userRegister);
 // 9. Login user
 api.post('/users/login', userCtrl.userLogin);
 
