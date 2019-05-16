@@ -64,7 +64,7 @@ async function findFollows(req, res) {
 
 async function deleteFollow(req, res) {
     try {
-        const resp = await dataBase.removeCollectionId({
+        const resp = await dataBase.deleteIdCollection({
             id: req.params.id,
             collection: Follow
         });

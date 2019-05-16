@@ -80,7 +80,7 @@ async function findRol(req, res) {
         ]
     }
     try {
-        const resp = await dataBase.findCollectionId(payload);
+        const resp = await dataBase.findByIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -95,7 +95,7 @@ async function updateRol(req, res) {
         requestData: req.body
     }
     try {
-        const resp = await dataBase.updateCollectionId(payload);
+        const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -110,7 +110,7 @@ async function removeRol(req, res) {
         collection: Rol
     }
     try {
-        const resp = await dataBase.removeCollectionId(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -129,7 +129,7 @@ async function simpleSearch(req, res) {
         sort: req.query.sort ? req.query.sort : '-updatedAt'
     }
     try {
-        const resp = await dataBase.simpleSearch(payload);
+        const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);

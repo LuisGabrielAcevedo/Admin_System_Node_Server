@@ -60,7 +60,7 @@ async function findCountries(req, res) {
         unselectFields: ['__v']
     }
     try {
-        const resp = await dataBase.findCollectionId(payload);
+        const resp = await dataBase.findByIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -76,7 +76,7 @@ async function updateCountry(req, res) {
     }
     try {
         await validation.body(Country, req.body);
-        const resp = await dataBase.updateCollectionId(payload);
+        const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -92,7 +92,7 @@ async function removeCountry(req, res) {
         collection: Country
     }
     try {
-        const resp = await dataBase.removeCollectionId(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -111,7 +111,7 @@ async function simpleSearch(req, res) {
 		sort: req.query.sort ? req.query.sort : 'createdAt'
 	};
 	try {
-		const resp = await dataBase.simpleSearch(payload);
+		const resp = await dataBase.findCollection(payload);
 		return res.status(resp.code).send(resp);
 	} catch (err) {
 		return res.status(err.code).send(err);

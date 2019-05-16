@@ -36,14 +36,9 @@ api.delete('/users/:id', compose([
 ]), userCtrl.removeUser);
 // 6. Get user image
 api.get('/users/image/:id/:file', userCtrl.getImage);
-// 7. Get users search
-api.get('/users/search/all-list', compose([
-    authMiddleware.authMiddlewareFirstActionFunction,
-    roleMiddleware.roleMiddlewareFunction
-]), userCtrl.simpleSearch);
-// 8. Register user
+// 7. Register user
 api.post('/users/register', userCtrl.userRegister);
-// 9. Login user
+// 8. Login user
 api.post('/users/login', userCtrl.userLogin);
 
 

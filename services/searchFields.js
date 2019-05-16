@@ -1,11 +1,11 @@
-function seachFileds(collection) {
-    return searchBy[collection]();
+function seachFieldsData(route) {
+    return searchBy[route]();
 }
 
 const searchBy = {
-    User: () =>  ['email', 'lastName', 'firstName']
+    users: () =>  ['email', 'lastName', 'firstName']
 }
 
 module.exports = {
-    seachFileds
+    seachFieldsData
 }

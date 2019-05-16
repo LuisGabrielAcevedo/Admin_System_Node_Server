@@ -71,7 +71,7 @@ async function removeLicense(req, res) {
         errorMessage: 'Error eliminando Licencia'
     }
     try {
-        const resp = await dataBase.removeCollectionId(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -88,7 +88,7 @@ async function findLicenses(req, res) {
         errorMessage: `Error buscando Licencia, el Licencia con id ${req.params.id} no existe`
     }
     try {
-        const resp = await dataBase.findCollectionId(payload);
+        const resp = await dataBase.findByIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -106,7 +106,7 @@ async function updateLicense(req, res) {
         errorMessage: 'Error actualizando Licencia'
     }
     try {
-        const resp = await dataBase.updateCollectionId(payload);
+        const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -127,7 +127,7 @@ async function simpleSearch(req, res) {
         errorMessage: 'Error buscado Licencias'
     }
     try {
-        const resp = await dataBase.simpleSearch(payload);
+        const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);

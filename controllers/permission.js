@@ -60,7 +60,7 @@ async function findPermission(req, res) {
         unselectFields: ['__v']
     }
     try {
-        const resp = await dataBase.findCollectionId(payload);
+        const resp = await dataBase.findByIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -76,7 +76,7 @@ async function updatePermission(req, res) {
         requestData: req.body
     }
     try {
-        const resp = await dataBase.updateCollectionId(payload);
+        const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -91,7 +91,7 @@ async function removePermission(req, res) {
         collection: Permission
     }
     try {
-        const resp = await dataBase.removeCollectionId(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -143,7 +143,7 @@ async function simpleSearch(req, res) {
         errorMessage: 'Error buscado permisos'
     }
     try {
-        const resp = await dataBase.simpleSearch(payload);
+        const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);

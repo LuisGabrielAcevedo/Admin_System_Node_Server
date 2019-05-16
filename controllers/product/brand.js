@@ -45,7 +45,7 @@ async function simpleSearch(req, res) {
         sort: req.query.sort ? req.query.sort : 'createdAt'
     };
     try {
-        const resp = await dataBase.simpleSearch(payload);
+        const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -61,7 +61,7 @@ async function removeBrand(req, res) {
         collection: Brand
     }
     try {
-        const resp = await dataBase.removeCollectionId(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -78,7 +78,7 @@ async function updateBrand(req, res) {
     }
     try {
         await validation.body(Brand, req.body);
-        const resp = await dataBase.updateCollectionId(payload);
+        const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);

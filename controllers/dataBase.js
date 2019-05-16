@@ -68,7 +68,7 @@ async function getIdOnCollection(req, res) {
         unselectFields: ['__v']
     }
     try {
-        const resp = await dataBase.findCollectionId(payload);
+        const resp = await dataBase.findByIdCollection(payload);
         return res.status(resp.code).send(resp);
     }
     catch (err) {
@@ -83,7 +83,7 @@ async function removeIdOnCollection(req, res) {
         collection: collection
     }
     try {
-        const resp = await dataBase.removeCollectionId(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp)
     }
     catch (err) {

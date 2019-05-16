@@ -83,174 +83,108 @@ function findCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `find_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `find_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
-		// 1. Validar coleccion
+		// 1. Collection validate
 		if (!payload.collection)
 			return reject({
 				status: 'WARNING',
 				code: 422,
 				msg: `invalid_collection`
 			});
-		// 2. Validar query
-		let query = payload.query ? payload.query : {};
-		// 3. Validar sort
-		let sort = payload.sort ? payload.sort : '';
-		// 4. Validar pagina
-		let page = payload.page ? payload.page : 1;
-		// 5. Validar items por pagina
-		let itemsPerPage = payload.itemsPerPage ? payload.itemsPerPage : 10;
-		// 6. Validar campos populados
-		let populate = payload.populateFields ? payload.populateFields : '';
-		// 7. Validar campos no selecionados
-		let unselectFieldsQuery = new Object();
+		// 2. Query validate
+		const query = payload.query ? payload.query : {};
+		// 3. Sort validate
+		const sort = payload.sort ? payload.sort : '';
+		// 4. Populate fields validate
+		const populate = payload.populateFields ? payload.populateFields : '';
+		// 5. Fields unselected validate
+		const unselectFieldsQuery = new Object();
 		if (payload.hasOwnProperty('unselectFields')) {
 			payload.unselectFields.forEach((element) => {
 				unselectFieldsQuery[element] = 0;
 			});
 		}
-		if (payload.hasOwnProperty('filters')) {
-			let promiseData = [];
-			payload.filters.forEach(filter => {
-				promiseData.push(getGroup(payload.collection, query, filter));
-			})
-			Promise.all(promiseData)
-				.then(resp => {
-					console.log(resp);
-				})
-				.catch(error => {
-					console.log('hay error');
-				})
-		}
-		payload.collection
-			.find(query)
-			.select(unselectFieldsQuery)
-			.sort(sort)
-			.populate(populate)
-			.paginate(page, itemsPerPage, (err, dataBaseResp, totalItems) => {
-				if (err)
-					return reject({
-						status: 'ERROR',
-						code: 500,
-						msg: msgError
+
+		if (payload.pagination) {
+			// 6. Page validate
+			const page = payload.pagination ? payload.pagination.page : 1;
+			// 7. Items per page validate
+			const itemsPerPage = payload.pagination ? payload.pagination.itemsPerPage : 10;
+			payload.collection
+				.find(query)
+				.select(unselectFieldsQuery)
+				.sort(sort)
+				.populate(populate)
+				.paginate(page, itemsPerPage, (err, dataBaseResp, totalItems) => {
+					if (err)
+						return reject({
+							status: 'ERROR',
+							code: 500,
+							msg: msgError
+						});
+					return resolve({
+						status: 'OK',
+						code: 200,
+						msg: msgSuccess,
+						totalItems: totalItems,
+						totalPages: Math.ceil(totalItems / itemsPerPage),
+						currentPage: page,
+						itemsPerPage: itemsPerPage,
+						data: dataBaseResp
 					});
-				return resolve({
-					status: 'OK',
-					code: 200,
-					msg: msgSuccess,
-					totalItems: totalItems,
-					totalPages: Math.ceil(totalItems / itemsPerPage),
-					currentPage: page,
-					itemsPerPage: itemsPerPage,
-					data: dataBaseResp
 				});
-			});
+
+		} else {
+			payload.collection
+				.find(query)
+				.select(unselectFieldsQuery)
+				.populate(populate)
+				.sort(sort)
+				.exec((err, dataBaseResp) => {
+					if (err)
+						return reject({
+							status: 'ERROR',
+							code: 500,
+							msg: msgError
+						});
+					return resolve({
+						status: 'OK',
+						code: 200,
+						msg: msgSuccess,
+						data: dataBaseResp
+					});
+				});
+		}
+
 	});
 }
 
-function getGroup(collection, query, filter) {
-	return new Promise((resolve, reject) => {
-		collection.aggregate([
-			{ $match: query },
-			{
-				$group: {
-					_id: `$${filter.field}`,
-					count: { $sum: 1 }
-				}
-			}
-		]).exec((err, dataBaseResp) => {
-			let promiseData = [];
-			dataBaseResp.forEach(element => {
-				promiseData.push(findByIdPromise(filter.collection, element._id, element.count));
-			})
-			Promise.all(promiseData)
-				.then(resp => {
-					resolve(resp);
-				})
-				.catch(error => {
-					console.log('error');
-				})
-		});
-	})
-}
-
-function findByIdPromise(collection, id, count) {
-	return new Promise((resolve, reject) => {
-		collection.findById(id).exec((err, dataBaseResp) => {
-			resolve({
-				_id: id,
-				name: dataBaseResp.name,
-				count: count
-			})
-		})
-	})
-}
-
-function simpleSearch(payload) {
-	const msgSuccess = payload.successMessage ? payload.successMessage : `find_${payload.collection.modelName.toLowerCase()}_success`;
-	const msgError = payload.errorMessage ? payload.errorMessage : `find_${payload.collection.modelName.toLowerCase()}_error`;
-	return new Promise((resolve, reject) => {
-		// 1. Validar query
-		let query = payload.query ? payload.query : {};
-		// 2. Validar sort
-		let sort = payload.sort ? payload.sort : '';
-		// 3. Validar campos no seleccionados
-		let unselectFieldsQuery = new Object();
-		if (payload.hasOwnProperty('unselectFields')) {
-			payload.unselectFields.forEach((element) => {
-				unselectFieldsQuery[element] = 0;
-			});
-		}
-		// 4. Validar campos populados
-		let populate = payload.populateFields ? payload.populateFields : '';
-		payload.collection
-			.find(query)
-			.select(unselectFieldsQuery)
-			.populate(populate)
-			.sort(sort)
-			.exec((err, dataBaseResp) => {
-				if (err)
-					return reject({
-						status: 'ERROR',
-						code: 500,
-						msg: msgError
-					});
-				return resolve({
-					status: 'OK',
-					code: 200,
-					msg: msgSuccess,
-					data: dataBaseResp
-				});
-			});
-	});
-}
-
-function findCollectionId(payload) {
+function findByIdCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `findbyid_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `findbyid_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
-		// 1. Validar coleccion
+		// 1. Collection validate
 		if (!payload.collection)
 			return reject({
 				status: 'WARNING',
 				code: 422,
 				msg: `invalid_collection`
 			});
-		// 2. Validar que venga el campo id
+		// 1. Id required validate
 		if (!payload.hasOwnProperty('id'))
 			return reject({
 				status: 'WARNING',
 				code: 422,
 				msg: `the_field id is_required`
 			});
-		// 3. Validar si viene los campos a desmarcar
+		// 3. Fields unselected validate
 		let unselectFieldsQuery = new Object();
 		if (payload.hasOwnProperty('unselectFields')) {
 			payload.unselectFields.forEach((element) => {
 				unselectFieldsQuery[element] = 0;
 			});
 		}
-		// 4. Validar campos populados
+		// 4. Populate fields validate
 		let populate = payload.populateFields ? payload.populateFields : '';
-		// 5. Consulta a base de datos
 		payload.collection
 			.findById(payload.id)
 			.select(unselectFieldsQuery)
@@ -356,7 +290,7 @@ function pullCollectionId(payload) {
 	});
 }
 
-function updateCollectionId(payload) {
+function updateIdCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `update_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `update_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
@@ -479,7 +413,7 @@ function updateManyIds(payload) {
 	})
 }
 
-function removeCollectionId(payload) {
+function deleteIdCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `delete_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
@@ -567,12 +501,11 @@ function removeCollection(payload) {
 
 module.exports = {
 	saveCollection,
-	findCollectionId,
+	findByIdCollection,
 	findCollection,
-	updateCollectionId,
-	removeCollectionId,
+	updateIdCollection,
+	deleteIdCollection,
 	removeCollection,
-	simpleSearch,
 	pushCollectionId,
 	pullCollectionId,
 	updateManyIds

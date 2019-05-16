@@ -94,7 +94,7 @@ async function findCustomers(req, res) {
         unselectFields: ['__v']
     }
     try {
-        const resp = await dataBase.findCollectionId(payload);
+        const resp = await dataBase.findByIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -114,7 +114,7 @@ async function updateCustomer(req, res) {
     }
     try {
         // await validation.body(Customer, req.body);
-        const resp = await dataBase.updateCollectionId(payload);
+        const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -130,7 +130,7 @@ async function removeCustomer(req, res) {
         fileFields: ['profileImage']
     }
     try {
-        const resp = await dataBase.removeCollectionId(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -176,7 +176,7 @@ async function simpleSearch(req, res) {
         ]
     }
     try {
-        const resp = await dataBase.simpleSearch(payload);
+        const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);

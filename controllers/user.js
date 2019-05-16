@@ -3,14 +3,12 @@ const UserConfigurations = require('../models/userConfigurations');
 const UserInformation = require('../models/userInformation');
 const dataBase = require('../services/dataBaseMethods');
 const fileMethods = require('../services/fileMethods');
-const queryMethods = require('../services/query');
 const path = require('path');
 const bcrypt = require('bcrypt-nodejs');
 const config = require('../config');
 const tokenExpired = config.server.token.timeExpired * 60;
 const secret = config.server.token.secret;
 const jwt = require('jsonwebtoken');
-const validation = require('../services/validation');
 const userMethods = require('../services/user');
 
 
@@ -18,6 +16,7 @@ const userMethods = require('../services/user');
 function user(req, res) {
     res.status(200).send({ msg: 'User controller works' });
 }
+
 // 1. Save user
 async function saveUser(req, res) {
     const payload = {
@@ -26,7 +25,6 @@ async function saveUser(req, res) {
         collection: User
     };
     try {
-        await validation.body(User, req.body, 'POST');
         const resp = await dataBase.saveCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
@@ -36,50 +34,13 @@ async function saveUser(req, res) {
 
 // 2. Get users
 async function getUsers(req, res) {
-    const searchFields = ['email', 'lastName', 'firstName'];
-
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-
     const payload = {
         collection: User,
-        query: query,
+        query: req.query.query,
         sort: req.query.sort,
-        page: req.query.page,
-        itemsPerPage: req.query.itemsPerPage,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        populateFields: [
-            {
-                path: 'company',
-                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 },
-                populate: {
-                    path: 'country',
-                    select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 }
-                }
-            },
-            {
-                path: 'role',
-                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 },
-                populate: [
-                    {
-                        path: 'permissions',
-                        select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0, applications: 0, description: 0 }
-                    },
-                    {
-                        path: 'stores',
-                        select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0 }
-                    }
-                ]
-            },
-            {
-                path: 'application',
-                select: { createdAt: 0, updatedAt: 0, deletedAt: 0, __v: 0, description: 0 }
-            },
-            {
-                path: 'profileImage',
-                select: { url: 1 }
-            }
-        ]
+        populateFields: req.query.populate
     };
     try {
         const resp = await dataBase.findCollection(payload);
@@ -90,33 +51,16 @@ async function getUsers(req, res) {
 }
 
 
-// 3. Buscar un usuario
+// 3. Get users
 async function findUser(req, res) {
     const payload = {
         id: req.params.id,
         collection: User,
         unselectFields: ['__v', 'password'],
-        populateFields: [
-            {
-                path: 'company',
-                select: { name: 1, _id: 1 }
-            },
-            {
-                path: 'role',
-                select: { name: 1, _id: 1 }
-            },
-            {
-                path: 'profileImage',
-                select: { url: 1 }
-            },
-            {
-                path: 'application',
-                select: { name: 1, _id: 1 }
-            }
-        ]
+        populateFields: req.query.populate
     }
     try {
-        const resp = await dataBase.findCollectionId(payload);
+        const resp = await dataBase.findByIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -124,7 +68,7 @@ async function findUser(req, res) {
 }
 
 
-// 4. Actualizar un usuario
+// 4. Update user
 async function updateUser(req, res) {
     const payload = {
         id: req.params.id,
@@ -135,15 +79,14 @@ async function updateUser(req, res) {
         fileField: 'profileImage'
     }
     try {
-        await validation.body(User, req.body);
-        const resp = await dataBase.updateCollectionId(payload);
+        const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
     }
 }
 
-// 5. Borrar un usuario
+// 5. Delete user
 async function removeUser(req, res) {
     const payload = {
         id: req.params.id,
@@ -151,7 +94,7 @@ async function removeUser(req, res) {
         fileFields: ['profileImage']
     }
     try {
-        const resp = await dataBase.removeCollectionId(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
         return res.status(err.code).send(err);
@@ -159,7 +102,7 @@ async function removeUser(req, res) {
 }
 
 
-// 6. Obtener la imagen del user
+// 6. Get user images
 async function getImage(req, res) {
     const payload = {
         id: req.params.id,
@@ -174,65 +117,26 @@ async function getImage(req, res) {
     }
 }
 
-// 7. Obtener users buscador
-async function simpleSearch(req, res) {
-    const searchFields = ['email', 'lastName', 'firstName'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-
-    const payload = {
-        collection: User,
-        query: query,
-        unselectFields: [
-            '__v', 'password', 'createdAt', 'updatedAt', 'deletedAt',
-            'documentType', 'documentNumber', 'language', 'application'
-        ],
-        sort: req.query.sort ? req.query.sort : '-updatedAt',
-        populateFields: [
-            {
-                path: 'company',
-                select: { name: 1, _id: 1 }
-            },
-            {
-                path: 'role',
-                select: { name: 1, _id: 1 }
-            },
-            {
-                path: 'profileImage',
-                select: { url: 1 }
-            }
-        ]
-    }
-    try {
-        const resp = await dataBase.simpleSearch(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
 // 8. Register user
 async function userRegister(req, res) {
     try {
-        // 1. Validate
-        // await validation.body(User, req.body, 'POST');
-        // 2. Validate email repeated
+        // 1. Validate email repeated
         const user = await userMethods.validateEmail(req.body.email);
-        // 3. Password
+        // 2. Password
         req.body.password = await userMethods.encryptPassword(req.body.password);
-        // 4. Save userConfigurations
+        // 3. Save userConfigurations
         const userConfigurations = await dataBase.saveCollection({
             requestData: req.body,
             collection: UserConfigurations
         })
-        // 5. Save userInformation
+        // 4. Save userInformation
         const userInformation = await dataBase.saveCollection({
             requestData: req.body,
             collection: UserInformation
         });
         req.body.userConfigurations = userConfigurations.data._id;
         req.body.userInformation = userInformation.data._id;
-        // 6. Save User
+        // 5. Save User
         const resp = await dataBase.saveCollection({
             requestData: req.body,
             collection: User
@@ -308,10 +212,21 @@ function userLogin(req, res) {
                     code: 422,
                     msg: `invalid_password`
                 })
-                // Crear token
+
+                // Create token
                 dataBaseResp.password = undefined;
                 dataBaseResp.__v = undefined;
-                const newToken = jwt.sign({ tokenUser: dataBaseResp }, secret, { expiresIn: tokenExpired });
+
+                const tokenUser = JSON.parse(JSON.stringify(dataBaseResp));;
+                tokenUser.role = undefined;
+
+                if(tokenUser.applicationRole === 'ADMIN') {
+                    tokenUser.secret = config.server.token.adminPassword;
+                    tokenUser.role = dataBaseResp.role._id;
+                }
+
+                const newToken = jwt.sign({ tokenUser }, secret, { expiresIn: tokenExpired });
+
                 return res.status(200).send({
                     status: 'OK',
                     code: 200,
@@ -333,7 +248,6 @@ module.exports = {
     updateUser,
     removeUser,
     getImage,
-    simpleSearch,
     userRegister,
     userLogin
 };

@@ -3,18 +3,18 @@ const Permission = require('../models/permission');
 const config = require('../config');
 
 function roleMiddlewareFunction(req, res, next) {
-    if (req.tokenVerified) {
+    if (req.tokenVerified.applicationRole === 'ADMIN') {
         if (req.tokenVerified.secret === config.server.token.adminPassword) {
             next();
         } else {
             return res.status(401).send({
                 status: 'ERROR',
                 code: 401,
-                msg: 'invalid_admin'
+                msg: 'invalid_user'
             });
         }
     } else {
-        getPermissionStatus(req, decoded.tokenUser.role._id, req.action)
+        getPermissionStatus(req, req.tokenVerified.role._id, req.action)
             .then(resp => next())
             .catch(error => {
                 return res.status(403).send({

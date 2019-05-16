@@ -1,4 +1,7 @@
-function query(search, searchFields, filters) {
+const searchFieldsMethods = require('./searchFields');
+
+function query(search, filters, searchRoute) {
+    const searchFields = searchFieldsMethods.seachFieldsData(searchRoute);
     let orParams = [];
     const andParams = filters ? filters : {};
     let query;

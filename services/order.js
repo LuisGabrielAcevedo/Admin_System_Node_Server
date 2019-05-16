@@ -36,7 +36,7 @@ async function updateOrderAction(req) {
     }
     try {
         // await validation.body(OrderItem, req.body);
-        const resp = req.params.id !== 'null' ? await dataBase.updateCollectionId(payload) : await dataBase.saveCollection(payload);
+        const resp = req.params.id !== 'null' ? await dataBase.updateIdCollection(payload) : await dataBase.saveCollection(payload);
         const orderFinal = await calculateAccountsAction(resp.data._id);
         resp.data = orderFinal;
         return resp;
@@ -108,7 +108,7 @@ async function updateOrderItemAction(req) {
     }
     try {
         // await validation.body(OrderItem, req.body);
-        const resp = await dataBase.updateCollectionId(payload);
+        const resp = await dataBase.updateIdCollection(payload);
         const orderFinal = await calculateAccountsAction(req.params.orderId);
         resp.data = orderFinal;
         return resp;
@@ -119,7 +119,7 @@ async function updateOrderItemAction(req) {
 
 async function findOrderAction(req) {
     try {
-        const resp = await dataBase.simpleSearch(payload);
+        const resp = await dataBase.findCollection(payload);
         return resp;
     } catch (err) {
         return e;
@@ -204,7 +204,7 @@ async function findOrdersSearchAction(req) {
         ]
     }
     try {
-        const resp = await dataBase.simpleSearch(payload);
+        const resp = await dataBase.findCollection(payload);
         return resp;
     } catch (err) {
         return err;
@@ -216,7 +216,7 @@ async function paidOrderAction(req) {
         const order = await calculateAccountsAction(req.params.id);
         order.paymentMethods = req.body.paymentMethods;
         order.status = 'PAID';
-        const updateOrder = await dataBase.updateCollectionId({
+        const updateOrder = await dataBase.updateIdCollection({
             id: order.id,
             collection: Order,
             requestData: order
@@ -257,7 +257,7 @@ async function calculateAccountsAction(orderId) {
                 }
             ]
         }
-        dataBase.findCollectionId(payload)
+        dataBase.findByIdCollection(payload)
             .then(resp => {
                 let subtotal = 0;
                 let tax = 0;
