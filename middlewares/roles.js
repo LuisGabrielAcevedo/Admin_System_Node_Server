@@ -13,8 +13,18 @@ function roleMiddlewareFunction(req, res, next) {
                 msg: 'invalid_user'
             });
         }
+    } else if (req.tokenVerified.applicationRole === 'FREE_USER') {
+        if (req.tokenVerified.secret === config.server.token.freeUserPassword) {
+            next();
+        } else {
+            return res.status(401).send({
+                status: 'ERROR',
+                code: 401,
+                msg: 'invalid_user'
+            });
+        }
     } else {
-        getPermissionStatus(req, req.tokenVerified.role._id, req.action)
+        getPermissionStatus(req)
             .then(resp => next())
             .catch(error => {
                 return res.status(403).send({
@@ -26,11 +36,11 @@ function roleMiddlewareFunction(req, res, next) {
     }
 }
 
-function getPermissionStatus(req, roleId, action) {
+function getPermissionStatus(req) {
     return new Promise((resolve, reject) => {
-        const permissionPath = action === 'second_action' ? `${req.route.path.split('/')[1]}_${req.route.path.split('/')[2]}` : req.route.path.split('/')[1];
+        const permissionPath = req.action === 'second_action' ? `${req.route.path.split('/')[1]}_${req.route.path.split('/')[2]}` : req.route.path.split('/')[1];
         const permisionName = `${req.route.stack[0].method}_${permissionPath}`;
-        Promise.all([getPermissionData(req, permisionName), getRoleData(roleId)])
+        Promise.all([getPermissionData(req, permisionName), getRoleData(req.tokenVerified.role)])
             .then(resp => {
                 const permisions = resp[1].permissionsRole;
                 const permission = resp[0].permissionId;

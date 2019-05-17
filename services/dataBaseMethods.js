@@ -1,13 +1,12 @@
 const moment = require('moment');
 const mongoosePagination = require('mongoose-pagination');
 const fileMethods = require('./fileMethods');
-const mongoose = require('mongoose');
 var path = require('path');
 var fs = require('fs');
 
 function saveCollection(payload) {
 	let repeatedValidateQuery = [];
-	if (payload.requestData.hasOwnProperty('email')) {
+	if (payload.requestData['email']) {
 		payload.requestData['email'] = payload.requestData['email'].toLowerCase();
 	}
 
@@ -321,8 +320,9 @@ function updateIdCollection(payload) {
 			if (payload.files === undefined || payload.files === null) {
 				// 4. Asignar valores y guardar
 				for (let element in payload.requestData) {
-					if (payload.requestData.hasOwnProperty(element))
+					if (payload.requestData[element]) {
 						dataBaseResp[element] = payload.requestData[element];
+					}
 				}
 				dataBaseResp['updatedAt'] = moment().toISOString();
 				payload.collection.findByIdAndUpdate(dataBaseResp._id, dataBaseResp, (err, dataBaseResp1) => {

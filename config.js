@@ -4,7 +4,8 @@ const config = {
         name: 'Admin System Server',
         token: {
             secret: 'adminSystemServer',
-            adminPassword: 'adminSystemServer596',
+            adminPassword: 'adminSystem596',
+            freeUserPassword: 'adminSystemFree596',
             timeExpired: 60000
         },
         // urlApi: 'http://localhost:3500/api/v1/',

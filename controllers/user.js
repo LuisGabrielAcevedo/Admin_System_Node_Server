@@ -213,15 +213,18 @@ function userLogin(req, res) {
                     msg: `invalid_password`
                 })
 
-                // Create token
                 dataBaseResp.password = undefined;
                 dataBaseResp.__v = undefined;
 
+                // Create token
                 const tokenUser = JSON.parse(JSON.stringify(dataBaseResp));;
                 tokenUser.role = undefined;
-
-                if(tokenUser.applicationRole === 'ADMIN') {
+                if (tokenUser.applicationRole === 'ADMIN') {
                     tokenUser.secret = config.server.token.adminPassword;
+                    tokenUser.role = dataBaseResp.role._id;
+                } else if (tokenUser.applicationRole === 'FREE_USER') {
+                    tokenUser.secret = config.server.token.freeUserPassword;
+                } else {
                     tokenUser.role = dataBaseResp.role._id;
                 }
 
