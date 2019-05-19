@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const UserConfigurations = require('../models/userConfigurations');
-const UserInformation = require('../models/userInformation');
+const UserInformation = require('../models/information');
 const dataBase = require('../services/dataBaseMethods');
 const fileMethods = require('../services/fileMethods');
 const path = require('path');
@@ -20,7 +20,7 @@ function user(req, res) {
 // 1. Save user
 async function saveUser(req, res) {
     const payload = {
-        repeatedFields: ['email'],
+        repeatedFieldsOr: ['email'],
         requestData: req.body,
         collection: User
     };

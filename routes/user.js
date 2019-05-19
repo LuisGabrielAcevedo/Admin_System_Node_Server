@@ -40,9 +40,12 @@ api.delete('/users/:id', compose([
 // 6. Get user image
 api.get('/users/image/:id/:file', userCtrl.getImage);
 // 7. Register user
-api.post('/users/register', userCtrl.userRegister);
+api.post('/users/register', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    validationsMiddleware.validationsMiddlewareFunction
+]), userCtrl.userRegister);
 // 8. Login user
-api.post('/users/login', validationsMiddleware.validationsMiddlewareFunction, userCtrl.userLogin);
+api.post('/users/login', userCtrl.userLogin);
 
 
 module.exports = api;

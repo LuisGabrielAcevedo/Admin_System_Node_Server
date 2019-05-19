@@ -17,11 +17,11 @@ const Axios = require('axios');
 const Company = require('../models/company');
 const User = require('../models/user');
 const UserConfigurations = require('../models/userConfigurations');
-const UserInformation = require('../models/userInformation');
+const UserInformation = require('../models/information');
 const Image = require('../models/image');
 const Product = require('../models/product/product');
 const Customer = require('../models/customer');
-const CustomerInformation = require('../models/userInformation');
+const CustomerInformation = require('../models/information');
 
 // Metodos de usuario
 const userMethods = require('../services/user');

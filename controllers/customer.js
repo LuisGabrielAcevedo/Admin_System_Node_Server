@@ -1,34 +1,32 @@
-// Modelos
 const Customer = require('../models/customer');
-const CustomerInformation = require('../models/userInformation');
-// Metodos de base de datos
+const CustomerInformation = require('../models/information');
 const dataBase = require('../services/dataBaseMethods');
-// Metodos para manejar archivos
 const fileMethods = require('../services/fileMethods');
-// Libreria para trabajar con ficheros
 const path = require('path');
-// Metodos para manejar queries de busqueda
 const queryMethods = require('../services/query');
-// Metodos de validacion
-const validation = require('../services/validation');
 
-// 0. Funcion de prueba del controlador
+// 0. Customer controller
 function customer(req, res) {
-    res.status(200).send({ msg: 'Controlador de clientes del sistema funcionando' })
+    res.status(200).send({ msg: 'Customer controller works' })
 }
 
-// 1. Guardar un cliente
+// 1. Save customer
 async function saveCustomer(req, res) {
     try {
-        // await validation.body(Customer, req.body, 'POST');
+        const respCustomer = await dataBase.saveCollection({
+            repeatedFieldsOr: ['email'],
+            requestData: req.body,
+            collection: Customer
+        });
         const customerInformation = await dataBase.saveCollection({
             requestData: req.body,
             collection: CustomerInformation
         });
-        req.body.customerInformation = customerInformation.data._id;
+        respCustomer.data.customerInformation = customerInformation.data._id;
         const resp = await dataBase.saveCollection({
-            requestData: req.body,
-            collection: Customer
+            id: respCustomer.data._id,
+            collection: Customer,
+            requestData: respCustomer.data
         });
         return res.status(resp.code).send(resp);
     } catch (err) {
@@ -36,47 +34,15 @@ async function saveCustomer(req, res) {
     }
 }
 
-// 2. Obtener Clientes
+// 2. Get customers
 async function getCustomers(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-
-    const searchFields = ['email', 'firstName', 'lastName', 'phone'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-
     const payload = {
         collection: Customer,
-        query: query,
-        sort: req.query.sort ? req.query.sort : 'createdAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
+        query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        populateFields: [
-            {
-                path: 'company',
-                select: { createdAt: 0, updatedAt: 0, __v: 0 },
-                populate: {
-                    path: 'country',
-                    select: { createdAt: 0, updatedAt: 0, __v: 0 }
-                } 
-            }, 
-            {
-                path: 'profileImage',
-                select: { url: 1 }
-            },
-            {
-                path: 'application',
-                select: { name: 1 }
-            },
-            {
-                path: 'customerInformation',
-                select: { createdAt: 0, updatedAt: 0, __v: 0  }
-            }
-        ]
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -86,12 +52,13 @@ async function getCustomers(req, res) {
     }
 }
 
-// 3. Buscar Clientes
-async function findCustomers(req, res) {
+// 3. Get customer
+async function findCustomer(req, res) {
     const payload = {
         id: req.params.id,
         collection: Customer,
-        unselectFields: ['__v']
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findByIdCollection(payload);
@@ -101,8 +68,7 @@ async function findCustomers(req, res) {
     }
 }
 
-
-// 4. Actualizar informacion del Cliente
+// 4. Put customer
 async function updateCustomer(req, res) {
     const payload = {
         id: req.params.id,
@@ -113,7 +79,6 @@ async function updateCustomer(req, res) {
         fileField: 'profileImage'
     }
     try {
-        // await validation.body(Customer, req.body);
         const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
@@ -121,8 +86,7 @@ async function updateCustomer(req, res) {
     }
 }
 
-
-// 5. Borrar un Cliente
+// 5. Delete customer
 async function removeCustomer(req, res) {
     const payload = {
         id: req.params.id,
@@ -137,7 +101,7 @@ async function removeCustomer(req, res) {
     }
 }
 
-// 6. Obtener la imagen del cliente
+// 6. Get image customer
 async function getImage(req, res) {
     const payload = {
         id: req.params.id,
@@ -152,45 +116,12 @@ async function getImage(req, res) {
     }
 }
 
-
-
-// 7. Obtener clientes buscador
-async function simpleSearch(req, res) {
-    const searchFields = ['email', 'firstName', 'lastName', 'phone'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-    const payload = {
-        collection: Customer,
-        query: query,
-        unselectFields: ['__v', 'password'],
-        sort: req.query.sort ? req.query.sort : 'createdAt',
-        populateFields: [
-            {
-                path: 'profileImage',
-                select: { url: 1 }
-            },
-            {
-                path: 'customerInformation',
-                select: { createdAt: 0, updatedAt: 0, __v: 0  }
-            }
-        ]
-    }
-    try {
-        const resp = await dataBase.findCollection(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
-
 module.exports = {
     customer,
     saveCustomer,
     getCustomers,
-    findCustomers,
+    findCustomer,
     updateCustomer,
     removeCustomer,
-    getImage,
-    simpleSearch
+    getImage
 }

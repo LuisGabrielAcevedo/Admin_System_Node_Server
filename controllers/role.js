@@ -1,6 +1,5 @@
-const Rol = require('../models/role');
+const Role = require('../models/role');
 const dataBase = require('../services/dataBaseMethods');
-const queryMethods = require('../services/query');
 
 // 0. Roles controller
 function role(req, res) {
@@ -8,11 +7,11 @@ function role(req, res) {
 }
 
 // 1. Save role
-async function saveRol(req, res) {
+async function saveRole(req, res) {
     const payload = {
-        requiredFields: ['name', 'company', 'application'],
+        repeatedFieldsAnd: ['name', 'company'],
         requestData: req.body,
-        collection: Rol
+        collection: Role
     }
     try {
         const resp = await dataBase.saveCollection(payload);
@@ -24,32 +23,13 @@ async function saveRol(req, res) {
 
 // 2. Get roles
 async function getRoles(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
-        collection: Rol,
-        query: query,
-        sort: req.query.sort ? req.query.sort : '-updatedAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
+        collection: Role,
+        query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        requiredFields: ['name', 'company', 'application'],
-        populateFields: [
-            {
-                path: 'company',
-                select: { _id: 1, name: 1, profileImage: 1}
-            },
-            {
-                path: 'application',
-                select: { _id: 1, name: 1}
-            }
-        ]
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -60,24 +40,12 @@ async function getRoles(req, res) {
 }
 
 // 3. Get role
-async function findRol(req, res) {
+async function findRole(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Rol,
+        collection: Role,
         unselectFields: ['__v'],
-        populateFields: [{
-                path: 'company',
-                select: { name: 1, _id: 1 }
-            },
-            {
-                path: 'permissions',
-                select: { name: 1, _id: 1 }
-            },
-            {
-                path: 'stores',
-                select: { name: 1, _id: 1 }
-            }
-        ]
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findByIdCollection(payload);
@@ -88,10 +56,10 @@ async function findRol(req, res) {
 }
 
 // 4. Update role
-async function updateRol(req, res) {
+async function updateRole(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Rol,
+        collection: Role,
         requestData: req.body
     }
     try {
@@ -104,10 +72,10 @@ async function updateRol(req, res) {
 
 
 // 5. Delete role
-async function removeRol(req, res) {
+async function deleteRole(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Rol
+        collection: Role
     }
     try {
         const resp = await dataBase.deleteIdCollection(payload);
@@ -117,31 +85,11 @@ async function removeRol(req, res) {
     }
 }
 
-// 6. Get roles search
-async function simpleSearch(req, res) {
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-    const payload = {
-        collection: Rol,
-        query: query,
-        unselectFields: ['__v', 'password'],
-        sort: req.query.sort ? req.query.sort : '-updatedAt'
-    }
-    try {
-        const resp = await dataBase.findCollection(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
 module.exports = {
     role,
-    saveRol,
+    saveRole,
     getRoles,
-    findRol,
-    updateRol,
-    removeRol,
-    simpleSearch
+    findRole,
+    updateRole,
+    deleteRole
 }

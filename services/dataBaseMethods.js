@@ -11,9 +11,9 @@ function saveCollection(payload) {
 	}
 
 	return new Promise((resolve, reject) => {
-		// 1. Repeated files
-		if (payload.hasOwnProperty('repeatedFields')) {
-			payload.repeatedFields.forEach((element) => {
+		// 1. Repeated fields
+		if (payload['repeatedFieldsOr']) {
+			payload.repeatedFieldsOr.forEach((element) => {
 				let obj = new Object();
 				obj[element] = payload.requestData[element];
 				repeatedValidateQuery.push(obj);
@@ -30,7 +30,7 @@ function saveCollection(payload) {
 					return reject({
 						status: 'WARNING',
 						code: 422,
-						msg: `the_object_already_exist`
+						msg: `the_${payload.collection.modelName.toLowerCase()}_already_exist`
 					});
 				} else {
 					save(payload)
@@ -38,7 +38,36 @@ function saveCollection(payload) {
 						.catch((err) => reject(err));
 				}
 			});
-		} else {
+		} else if (payload['repeatedFieldsAnd']) {
+			payload.repeatedFieldsAnd.forEach((element) => {
+				let obj = new Object();
+				obj[element] = payload.requestData[element];
+				repeatedValidateQuery.push(obj);
+			});
+
+			payload.collection.find({}).and(repeatedValidateQuery).exec((err, dataBaseResp) => {
+				if (err)
+					return reject({
+						status: 'ERROR',
+						code: 500,
+						msg: 'data_base_error_repeated_fields'
+					});
+				if (dataBaseResp && dataBaseResp.length >= 1) {
+					return reject({
+						status: 'WARNING',
+						code: 422,
+						msg: `the_${payload.collection.modelName.toLowerCase()}_already_exist`
+					});
+				} else {
+					save(payload)
+						.then((resp) => resolve(resp))
+						.catch((err) => reject(err));
+				}
+			});
+		}
+
+
+		else {
 			save(payload)
 				.then((resp) => resolve(resp))
 				.catch((err) => reject(err));
@@ -199,7 +228,7 @@ function findByIdCollection(payload) {
 					return reject({
 						status: 'WARNING',
 						code: 422,
-						msg: `the_id ${payload.id} does_not_exist. it_has_probably_already_been_eliminated`
+						msg: `the_id ${payload.id} does_not_exist`
 					});
 				return resolve({
 					status: 'OK',
@@ -237,7 +266,7 @@ function pushCollectionId(payload) {
 					return reject({
 						status: 'WARNING',
 						code: 422,
-						msg: `the_id ${payload.id} does_not_exist. it_has_probably_already_been_eliminated`
+						msg: `the_id ${payload.id} does_not_exist`
 					});
 				return resolve({
 					status: 'OK',
@@ -276,7 +305,7 @@ function pullCollectionId(payload) {
 					return reject({
 						status: 'WARNING',
 						code: 422,
-						msg: `the_id ${payload.id} does_not_exist. it_has_probably_already_been_eliminated`
+						msg: `the_id ${payload.id} does_not_exist`
 					});
 				return resolve({
 					status: 'OK',
@@ -313,7 +342,7 @@ function updateIdCollection(payload) {
 				return reject({
 					status: 'WARNING',
 					code: 422,
-					msg: `the_id ${payload.id} does_not_exist. it_has_probably_already_been_eliminated`
+					msg: `the_id ${payload.id} does_not_exist`
 				});
 			dataBaseResp.__v = undefined;
 			// 3. Validar si vienen archivos
@@ -417,21 +446,21 @@ function deleteIdCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `delete_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
-		// 1. Validar coleccion
+		// 1. Collection validation
 		if (!payload.collection)
 			return reject({
 				status: 'WARNING',
 				code: 422,
 				msg: `invalid_collection`
 			});
-		// 2. Validar que venga el campo id
+		// 2. Id required validation
 		if (!payload.hasOwnProperty('id'))
 			return reject({
 				status: 'WARNING',
 				code: 422,
 				msg: `the_field id is_required`
 			});
-		// 3. Borrar en base de datos
+		// 3. Delete data
 		payload.collection.findByIdAndRemove(payload.id, (err, dataBaseResp) => {
 			if (err)
 				return reject({
@@ -443,23 +472,8 @@ function deleteIdCollection(payload) {
 				return reject({
 					status: 'WARNING',
 					code: 422,
-					msg: `the_id ${payload.id} does_not_exist. it_has_probably_already_been_eliminated`
+					msg: `the_id ${payload.id} does_not_exist`
 				});
-			// // 4. Borrar ficheros
-			// if (payload.hasOwnProperty('fileFields')) {
-			// 	payload.fileFields.forEach((fileField) => {
-			// 		if (dataBaseResp[fileField].fileName) {
-			// 			const currentPath = `${dataBaseResp[fileField].directory}/${dataBaseResp[fileField].fileName}`;
-			// 			const curretPathFormated = path.normalize(currentPath);
-			// 			fs.exists(curretPathFormated, function (exists) {
-			// 				if (exists) fs.unlink(curretPathFormated);
-			// 				fs.exists(dataBaseResp[fileField].directory, function (exists) {
-			// 					if (exists) fs.rmdirSync(dataBaseResp[fileField].directory);
-			// 				});
-			// 			});
-			// 		}
-			// 	});
-			// }
 			dataBaseResp.__v = undefined;
 			return resolve({
 				status: 'OK',

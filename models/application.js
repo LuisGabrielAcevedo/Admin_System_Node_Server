@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const ApplicationSchema = Schema({
     name: { type: String, required: true },
+    code: { type: String, required: true },
     description: { type: String, default: null },
-    code: { type: String, default: null },
     createdAt: { type: String, default: null },
     updatedAt: { type: String, default: null },
     deletedAt: { type: String, default: null }

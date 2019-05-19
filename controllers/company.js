@@ -1,30 +1,21 @@
-// models
 const Company = require('../models/company');
-// Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
-// Metodos para manejar archivos
 const fileMethods = require('../services/fileMethods');
-// Libreria para trabajar con ficheros
 const path = require('path');
-// Metodos para manejar queries de busqueda
-const queryMethods = require('../services/query');
-// Metodos de validacion
-const validation = require('../services/validation');
 
-// 0. Funcion de prueba del controlador
+// 0. Company controller
 function company(req, res) {
-	res.status(200).send({ msg: 'Controlador de empresas funcionando' });
+	res.status(200).send({ msg: 'Company controller works' });
 }
-// 1. Guardar empresa
+
+// 1. Save company
 async function saveCompany(req, res) {
 	const payload = {
-		requiredFields: [ 'country', 'name', 'application' ],
-		repeatedFields: [ 'name' ],
+		repeatedFieldsAnd: [ 'name', 'application' ],
 		requestData: req.body,
 		collection: Company
 	};
 	try {
-		// await validation.body(Company, req.body, 'POST');
 		const resp = await dataBase.saveCollection(payload);
 		return res.status(200).send(resp);
 	} catch (err) {
@@ -32,43 +23,15 @@ async function saveCompany(req, res) {
 	}
 }
 
-// 2. Obtener Empresas
+// 2. Find companies
 async function getCompanies(req, res) {
-	const searchFields = [ 'name' ];
-	const query =
-		req.query.search || req.query.filters
-			? queryMethods.query(req.query.search, searchFields, req.query.filters)
-			: {};
-
 	const payload = {
 		collection: Company,
-		query: query,
-		sort: req.query.sort ? req.query.sort : '-updatedAt',
-		page: req.query.page ? Number(req.query.page) : 1,
-		itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
-		unselectFields: [ '__v' ],
-		populateFields: [
-			{
-				path: 'country',
-				select: { name: 1, _id: 1 }
-			},
-			{
-				path: 'stores',
-				select: { name: 1, _id: 1 }
-			},
-			{
-				path: 'application',
-				select: { name: 1, _id: 1 }
-			},
-			{
-				path: 'admin',
-				select: { firstName: 1, _id: 1, profileImage: 1 }
-			},
-			{
-                path: 'profileImage',
-                select: { url: 1 }
-            }
-		]
+		query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
 	};
 	try {
 		const resp = await dataBase.findCollection(payload);
@@ -78,7 +41,7 @@ async function getCompanies(req, res) {
 	}
 }
 
-// 4. Actualizar una Empresa
+// 3. Update company
 async function updateCompany(req, res) {
 	const payload = {
         id: req.params.id,
@@ -96,7 +59,7 @@ async function updateCompany(req, res) {
     }
 }
 
-// 5. Borrar una empresa
+// 4. Delete company
 async function removeCompany(req, res) {
 	const payload = {
 		id: req.params.id,
@@ -111,7 +74,7 @@ async function removeCompany(req, res) {
 	}
 }
 
-// 6. Obtener la imagen de la empresa
+// 5. Get images
 async function getImage(req, res) {
 	const payload = {
 		id: req.params.id,
@@ -126,80 +89,13 @@ async function getImage(req, res) {
 	}
 }
 
-// 7. Obtener el logo de la empresa
-async function getLogo(req, res) {
-	const payload = {
-		id: req.params.id,
-		fileName: req.params.file,
-		path: 'uploads/company/logo'
-	};
-	try {
-		const resp = await fileMethods.getFile(payload);
-		return res.sendFile(path.resolve(resp.url));
-	} catch (err) {
-		return res.status(err.code).send(err);
-	}
-}
-
-// 8. Obtener compañias buscador
-async function simpleSearch(req, res) {
-	const searchFields = [ 'name' ];
-	const query =
-		req.query.search || req.query.filters
-			? queryMethods.query(req.query.search, searchFields, req.query.filters)
-			: {};
-	const payload = {
-		collection: Company,
-		query: query,
-		unselectFields: [ '__v' ],
-		populateFields: [
-			{
-				path: 'application',
-				select: { name: 1, _id: 1, code: 1 }
-			},
-			{
-                path: 'profileImage',
-                select: { url: 1 }
-            }
-		],
-		sort: req.query.sort ? req.query.sort : '-updatedAt'
-	};
-	try {
-		const resp = await dataBase.findCollection(payload);
-		return res.status(resp.code).send(resp);
-	} catch (err) {
-		return res.status(err.code).send(err);
-	}
-}
-
-// 3. Buscar un usuario
+// 6. Get company image
 async function findCompany(req, res) {
     const payload = {
         id: req.params.id,
         collection: Company,
-        unselectFields: ['__v'],
-        populateFields: [
-			{
-				path: 'country',
-				select: { name: 1, _id: 1 }
-			},
-			{
-				path: 'stores',
-				select: { name: 1, _id: 1 }
-			},
-			{
-				path: 'application',
-				select: { name: 1, _id: 1 }
-			},
-			{
-				path: 'admin',
-				select: { firstName: 1, _id: 1, profileImage: 1 }
-			},
-			{
-                path: 'profileImage',
-                select: { url: 1 }
-            }
-		]
+		unselectFields: ['__v'],
+		populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findByIdCollection(payload);
@@ -216,7 +112,5 @@ module.exports = {
 	removeCompany,
 	getCompanies,
 	getImage,
-	getLogo,
-	simpleSearch,
 	findCompany
 };

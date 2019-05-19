@@ -1,29 +1,23 @@
-// Modelos
 const Store = require('../models/store');
 const StoreConfigurations = require('../models/storeConfigurations');
 const Company = require('../models/company');
-// Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
-// Metodos para manejar queries de busqueda
-const queryMethods = require('../services/query');
-// Metodos de validacion
-const validation = require('../services/validation');
 
-// 0. Funcion de prueba del controlador
+// 0. Store controller
 function store(req, res) {
     res.status(200).send({ msg: 'Store controller works' })
 }
 
-// 1. Guardar una tienda
+// 1. Save store
 async function saveStore(req, res) {
     try {
-        await validation.body(Store, req.body, 'POST');
         const storeConfigurationsResp = await dataBase.saveCollection({
             requestData: req.body,
             collection: StoreConfigurations
         });
         req.body.storeConfigurations = storeConfigurationsResp.data._id;
         const storeResp = await dataBase.saveCollection({
+            repeatedFieldsAnd: [ 'name', 'company' ],
             requestData: req.body,
             collection: Store
         });
@@ -38,36 +32,15 @@ async function saveStore(req, res) {
     }
 }
 
-// 2. Obtener tiendas
+// 2. Get stores
 async function getStores(req, res) {
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
         collection: Store,
-        query: query,
-        sort: req.query.sort ? req.query.sort : '-updatedAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
+        query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        populateFields: [
-            {
-                path: 'application',
-                select: { name: 1, _id: 1 }
-            },
-            {
-                path: 'country',
-                select: { name: 1, _id: 1 }
-            },
-            {
-                path: 'company',
-                select: { name: 1, _id: 1, profileImage: 1 }
-            },
-            {
-                path: 'storeConfigurations',
-                select: { __v: 0 }
-            }
-        ]
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -77,21 +50,13 @@ async function getStores(req, res) {
     }
 }
 
-// 3. Buscar una tienda
+// 3. Get store
 async function findStore(req, res) {
     const payload = {
         id: req.params.id,
         collection: Store,
         unselectFields: ['__v'],
-        populateFields: [{
-            path: 'application',
-            select: { name: 1, _id: 1 }
-        },
-        {
-            path: 'company',
-            select: { name: 1, _id: 1 }
-        }
-        ]
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findByIdCollection(payload);
@@ -101,7 +66,7 @@ async function findStore(req, res) {
     }
 }
 
-// 4. Actualizar una tienda
+// 4. Update store
 async function updateStore(req, res) {
     const payload = {
         id: req.params.id,
@@ -109,7 +74,6 @@ async function updateStore(req, res) {
         requestData: req.body
     }
     try {
-        await validation.body(Store, req.body);
         const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
@@ -117,8 +81,8 @@ async function updateStore(req, res) {
     }
 }
 
-// 5. Borrar una tienda
-async function removeStore(req, res) {
+// 5. Delete store
+async function deleteStore(req, res) {
     const payload = {
         id: req.params.id,
         collection: Store
@@ -131,24 +95,6 @@ async function removeStore(req, res) {
     }
 }
 
-// 6. Obtener tiendas buscador
-async function simpleSearch(req, res) {
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-    const payload = {
-        collection: Store,
-        query: query,
-        unselectFields: ['__v'],
-        sort: req.query.sort ? req.query.sort : '-updatedAt'
-    }
-    try {
-        const resp = await dataBase.findCollection(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
 
 module.exports = {
     store,
@@ -156,6 +102,5 @@ module.exports = {
     getStores,
     findStore,
     updateStore,
-    removeStore,
-    simpleSearch
+    deleteStore
 }

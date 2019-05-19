@@ -1,24 +1,43 @@
 const express = require('express');
 const companyCtrl = require('../controllers/company');
 const api = express.Router();
+const authMiddleware = require('../middlewares/auth');
+const roleMiddleware = require('../middlewares/roles');
+const queryMiddleware = require('../middlewares/query');
+const validationsMiddleware = require('../middlewares/validations');
+const compose = require('compose-middleware').compose;
 
-// 0. Prueba del controlador
+// 0. Company controller
 api.get('/companies/controller', companyCtrl.company);
-// 1. Guardar empresa
-api.post('/companies', companyCtrl.saveCompany);
-// 2. Obtener usuarios
-api.get('/companies', companyCtrl.getCompanies);
-// 4. Actualizar una empresa
-api.put('/companies/:id', companyCtrl.updateCompany);
-// 5. Borrar una empresa
-api.delete('/companies/:id/', companyCtrl.removeCompany);
-// 6. Obtener la imagen de la empresa
+// 1. Save company
+api.post('/companies', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction,
+    validationsMiddleware.validationsMiddlewareFunction
+]), companyCtrl.saveCompany);
+// 2. Get comanies
+api.get('/companies', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction,
+    queryMiddleware.queryMiddlewareFunction
+]), companyCtrl.getCompanies);
+// 3. Update company
+api.put('/companies/:id', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction,
+    validationsMiddleware.validationsMiddlewareFunction
+]), companyCtrl.updateCompany);
+// 4. Delete company
+api.delete('/companies/:id/', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction
+]), companyCtrl.removeCompany);
+// 5. Get comany image
 api.get('/companies/image/:id/:file', companyCtrl.getImage);
-// 7. Obtener el logo de la empresa
-api.get('/companies/logo/:id/:file', companyCtrl.getLogo);
-// 8. Obtener empresas buscador
-api.get('/companies/search/all-list', companyCtrl.simpleSearch);
-// 4. Buscar una empresa
-api.get('/companies/:id', companyCtrl.findCompany);
+// 6. Get company
+api.get('/companies/:id', compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction
+]), companyCtrl.findCompany);
 
 module.exports = api;

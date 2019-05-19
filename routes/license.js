@@ -3,17 +3,17 @@ const licenseCtrl = require('../controllers/license');
 const api = express.Router();
 
 // 0. Prueba del controlador
-api.get('/license', licenseCtrl.license);
+api.get('/licenses', licenseCtrl.license);
 // 1. Guardar cliente
-api.post('/license', licenseCtrl.saveLicense);
+api.post('/licenses', licenseCtrl.saveLicense);
 // 2. Obtener clientes
 api.get('/licenses', licenseCtrl.getLicenses);
 // 3. Buscar cliente
-api.get('/license/:id', licenseCtrl.findLicenses);
+api.get('/licenses/:id', licenseCtrl.findLicenses);
 // 4. Borrar un cliente
-api.delete('/license/:id', licenseCtrl.removeLicense);
+api.delete('/licenses/:id', licenseCtrl.removeLicense);
 // 5. Actualizar un cliente
-api.put('/license/:id', licenseCtrl.updateLicense);
+api.put('/licenses/:id', licenseCtrl.updateLicense);
 // 6. Obtener clientes buscador
 api.get('/licenses/search/all-list', licenseCtrl.simpleSearch);
 

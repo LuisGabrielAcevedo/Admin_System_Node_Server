@@ -1,24 +1,17 @@
-// Modelos
 const Permission = require('../models/permission');
-// Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
-// Permission data
 const permissionData = require('../data/permission');
-// Metodos para manejar queries de busqueda
-const queryMethods = require('../services/query');
-// Libreria para registrar momento
 const moment = require('moment');
 
 
-// 0. Funcion de prueba del controlador
+// 0. Permission controller
 function permission(req, res) {
-    res.status(200).send({ msg: 'Controlador de permisos para las aplicaciones funcionando' });
+    res.status(200).send({ msg: 'Permission controller works' });
 }
-// 1. Guardar un permiso
+// 1. Save permission
 async function savePermission(req, res) {
     const payload = {
-        requiredFields: ['name', 'description', 'module'],
-        repeatedFields: ['name'],
+        repeatedFieldsOr: ['name'],
         requestData: req.body,
         collection: Permission
     }
@@ -30,19 +23,15 @@ async function savePermission(req, res) {
     }
 }
 
-// 2. Obtener permisos
+// 2. Get permissions
 async function getPermissions(req, res) {
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
         collection: Permission,
-        query: query,
-        sort: req.query.sort ? req.query.sort : '-updatedAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
+        query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        requiredFields: ['name', 'description', 'module']
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -52,12 +41,13 @@ async function getPermissions(req, res) {
     }
 }
 
-// 3. Buscar Permisos
+// 3. Get permission
 async function findPermission(req, res) {
     const payload = {
         id: req.params.id,
         collection: Permission,
-        unselectFields: ['__v']
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findByIdCollection(payload);
@@ -68,7 +58,7 @@ async function findPermission(req, res) {
 }
 
 
-// 4. Actualizar permiso
+// 4. Update permission
 async function updatePermission(req, res) {
     const payload = {
         id: req.params.id,
@@ -84,8 +74,8 @@ async function updatePermission(req, res) {
 }
 
 
-// 5. Borrar un permiso
-async function removePermission(req, res) {
+// 5. Delete permission
+async function deletePermission(req, res) {
     const payload = {
         id: req.params.id,
         collection: Permission
@@ -98,7 +88,7 @@ async function removePermission(req, res) {
     }
 }
 
-// 6. Atualizar permisos automaticamente
+// 6. Create permissions
 async function updatePermissions(req, res) {
     permissionData.forEach(item => {
         item.permissions.forEach(name => {
@@ -129,28 +119,7 @@ async function updatePermissions(req, res) {
     });
 }
 
-// 7. Obtener administradores buscador
-async function simpleSearch(req, res) {
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-    const payload = {
-        collection: Permission,
-        query: query,
-        unselectFields: ['__v', 'password'],
-        sort: req.query.sort ? req.query.sort : '-updatedAt',
-        successMessage: 'Permisos encontrados con exito',
-        errorMessage: 'Error buscado permisos'
-    }
-    try {
-        const resp = await dataBase.findCollection(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
-// 8. Actualizar varios permisos
+// 7. Update many permissions
 async function updateManyPermissions(req, res) {
     const payload = {
         collection: Permission,
@@ -171,8 +140,7 @@ module.exports = {
     getPermissions,
     findPermission,
     updatePermission,
-    removePermission,
+    deletePermission,
     updatePermissions,
-    simpleSearch,
     updateManyPermissions
 }
