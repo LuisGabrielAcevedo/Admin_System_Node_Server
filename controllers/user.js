@@ -61,6 +61,8 @@ async function findUser(req, res) {
     }
     try {
         const resp = await dataBase.findByIdCollection(payload);
+        // // notes
+        // const notesPopulate = req.query.populate.find(item => item.path === 'notes');
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -225,17 +227,16 @@ function userLogin(req, res) {
                 } else if (tokenUser.applicationRole === 'FREE_USER') {
                     tokenUser.secret = config.server.token.freeUserPassword;
                 } else {
-                    tokenUser.role = dataBaseResp.role._id;
+                    tokenUser.role = dataBaseResp.role ? dataBaseResp.role._id : null;
                 }
 
                 const newToken = jwt.sign({ tokenUser }, secret, { expiresIn: tokenExpired });
-
+                dataBaseResp.token = newToken;
                 return res.status(200).send({
                     status: 'OK',
                     code: 200,
                     msg: `auth_user_success`,
-                    data: dataBaseResp,
-                    token: newToken
+                    data: dataBaseResp
                 })
             })
 

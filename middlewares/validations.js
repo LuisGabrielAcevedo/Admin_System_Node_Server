@@ -21,6 +21,26 @@ function validationsMiddlewareFunction(req, res, next) {
             }
         }
 
+        // const Joi = require('joi');
+        // const vaidations = validations[route]();
+        // Joi.validate(req.body, vaidations, function (err, value) {
+        //     if (err && err.details) {
+        //         for (const error in err.details) {
+        //             if (err.details[error]) {
+        //                 errors[err.details[error].path[0]] = `The field ${err.details[error].message.replace(/["]+/g, '')}`;
+        //                 errorsStatus = true;
+        //             }
+        //         }
+        //     }
+        // });
+
+        // errors
+        //     ? res.status(422).send({
+        //         status: 'WARNING',
+        //         code: 422,
+        //         msg: errors
+        //     }) : next();
+
         if (errorsStatus) {
             res.status(422).send({
                 status: 'WARNING',

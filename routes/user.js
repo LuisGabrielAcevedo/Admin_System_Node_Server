@@ -24,7 +24,8 @@ api.get('/users', compose([
 // 3. Get user
 api.get('/users/:id', compose([
     authMiddleware.authMiddlewareFirstActionFunction,
-    roleMiddleware.roleMiddlewareFunction
+    roleMiddleware.roleMiddlewareFunction,
+    queryMiddleware.queryMiddlewareFunction
 ]), userCtrl.findUser);
 // 4. Update user
 api.put('/users/:id', compose([
@@ -41,7 +42,7 @@ api.delete('/users/:id', compose([
 api.get('/users/image/:id/:file', userCtrl.getImage);
 // 7. Register user
 api.post('/users/register', compose([
-    authMiddleware.authMiddlewareFirstActionFunction,
+    // authMiddleware.authMiddlewareFirstActionFunction,
     validationsMiddleware.validationsMiddlewareFunction
 ]), userCtrl.userRegister);
 // 8. Login user
