@@ -16,6 +16,8 @@ const UserSchema = Schema({
     userInformation: { type: Schema.ObjectId, ref: 'Information', default: null },
     userConfigurations: { type: Schema.ObjectId, ref: 'UserConfigurations', default: null },
     profileImage: { type: Schema.ObjectId, ref: 'Image', default: null },
+    followings: { type: Number, default: 0 },
+    followers: { type: Number, default: 0 },
     createdAt: { type: String, default: null },
     updatedAt: { type: String, default: null },
     deletedAt: { type: String, default: null }

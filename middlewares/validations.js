@@ -123,6 +123,7 @@ const countries = require('../models/country');
 const follows = require('../models/follow');
 const posts = require('../models/post/post');
 const licenses = require('../models/license');
+const likes = require('../models/post/like');
 
 const models = {
     companies: () => companies,
@@ -138,5 +139,6 @@ const models = {
     countries: () => countries,
     follows: () => follows,
     posts: () => posts,
+    likes: () => likes,
     licenses: () => licenses
 }

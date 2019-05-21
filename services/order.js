@@ -58,7 +58,7 @@ async function saveOrderItemAction(req) {
         const orderId = req.params.orderId;
         let order = null;
         if (orderId) {
-            order = await dataBase.pushCollectionId({
+            order = await dataBase.pushIdCollection({
                 id: orderId,
                 collection: Order,
                 push: { orderItems: orderItemResp.data._id }
@@ -87,7 +87,7 @@ async function saveOrderItemAction(req) {
 
 async function deleteOrderItemAction(req) {
     try {
-        const order = await dataBase.pullCollectionId({
+        const order = await dataBase.pullIdCollection({
             id: req.params.orderId,
             collection: Order,
             pull: { orderItems: req.params.id }

@@ -21,7 +21,7 @@ async function saveStore(req, res) {
             requestData: req.body,
             collection: Store
         });
-        const companyResp = await dataBase.pushCollectionId({
+        const companyResp = await dataBase.pushIdCollection({
             id: storeResp.data.company,
             collection: Company,
             push: { stores: storeResp.data._id }

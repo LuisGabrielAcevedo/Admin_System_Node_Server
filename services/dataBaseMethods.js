@@ -240,7 +240,7 @@ function findByIdCollection(payload) {
 	});
 }
 
-function pushCollectionId(payload) {
+function pushIdCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `update_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `update_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
@@ -279,7 +279,7 @@ function pushCollectionId(payload) {
 	});
 }
 
-function pullCollectionId(payload) {
+function pullIdCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `delete_${payload.collection.modelName.toLowerCase()}_error`;
 	return new Promise((resolve, reject) => {
@@ -442,6 +442,45 @@ function updateManyIds(payload) {
 	})
 }
 
+function incIdCollection(payload) {
+	const msgSuccess = payload.successMessage ? payload.successMessage : `update_${payload.collection.modelName.toLowerCase()}_success`;
+	const msgError = payload.errorMessage ? payload.errorMessage : `update_${payload.collection.modelName.toLowerCase()}_error`;
+	return new Promise((resolve, reject) => {
+		// 1. Validar que venga el campo id
+		if (!payload.hasOwnProperty('id'))
+			return reject({
+				status: 'WARNING',
+				code: 422,
+				msg: `the_field id is_required`
+			});
+
+		payload.collection.update(
+			{ _id: payload.id },
+			{ $inc: payload.inc },
+			(err, dataBaseResp) => {
+				if (err)
+					return reject({
+						status: 'ERROR',
+						code: 500,
+						msg: msgError
+					});
+				if (!dataBaseResp)
+					return reject({
+						status: 'WARNING',
+						code: 422,
+						msg: `the_id ${payload.id} does_not_exist`
+					});
+				return resolve({
+					status: 'OK',
+					code: 200,
+					msg: msgSuccess,
+					data: dataBaseResp
+				});
+			});
+
+	});
+}
+
 function deleteIdCollection(payload) {
 	const msgSuccess = payload.successMessage ? payload.successMessage : `delete_${payload.collection.modelName.toLowerCase()}_success`;
 	const msgError = payload.errorMessage ? payload.errorMessage : `delete_${payload.collection.modelName.toLowerCase()}_error`;
@@ -520,7 +559,8 @@ module.exports = {
 	updateIdCollection,
 	deleteIdCollection,
 	removeCollection,
-	pushCollectionId,
-	pullCollectionId,
-	updateManyIds
+	pushIdCollection,
+	pullIdCollection,
+	updateManyIds,
+	incIdCollection
 };
