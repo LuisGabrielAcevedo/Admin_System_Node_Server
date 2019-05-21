@@ -121,7 +121,7 @@ const stores = require('../models/store');
 const applications = require('../models/application');
 const countries = require('../models/country');
 const follows = require('../models/follow');
-const posts = require('../models/post');
+const posts = require('../models/post/post');
 const licenses = require('../models/license');
 
 const models = {

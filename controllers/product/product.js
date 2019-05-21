@@ -2,15 +2,10 @@
 const Product = require('../../models/product/product');
 const Company = require('../../models/company');
 const ProductCategory = require('../../models/product/productCategory');
-// Metodos de base de datos
 const dataBase = require('../../services/dataBaseMethods');
-// Metodos para manejar queries de busqueda
 const queryMethods = require('../../services/query');
-// Metodos de validacion
 const validation = require('../../services/validation');
-// Metodos para manejar archivos
 const fileMethods = require('../../services/fileMethods');
-// Libreria para trabajar con ficheros
 const path = require('path');
 
 // 0. Funcion de prueba del controlador

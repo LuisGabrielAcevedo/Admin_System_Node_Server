@@ -28,7 +28,9 @@ const vendorRoutes = require('./routes/product/vendor');
 const orderRoutes = require('./routes/sale/order');
 const orderItemRoutes = require('./routes/sale/orderItem');
 const followRoutes = require('./routes/follow');
-const postRoutes = require('./routes/post');
+const postRoutes = require('./routes/post/post');
+const likeRoutes = require('./routes/post/like');
+const commentRoutes = require('./routes/post/comment');
 
 // 4. Body parser
 const body_parser = require('body-parser');
@@ -65,5 +67,7 @@ app.use('/api/v1', orderRoutes);
 app.use('/api/v1', orderItemRoutes);
 app.use('/api/v1', followRoutes);
 app.use('/api/v1', postRoutes);
+app.use('/api/v1', likeRoutes);
+app.use('/api/v1', commentRoutes);
 
 module.exports = app;
