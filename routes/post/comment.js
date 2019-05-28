@@ -9,5 +9,10 @@ const compose = require('compose-middleware').compose;
 
 // 0. Comment controller
 api.get('/comments/controller', commentCtrl.comment);
+// 1. Save comment
+api.post('/comments', compose([
+    authMiddleware.authMiddlewareSecondActionFunction,
+    validationsMiddleware.validationsMiddlewareFunction
+]), commentCtrl.saveComment);
 
 module.exports = api;

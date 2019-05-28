@@ -454,8 +454,8 @@ function incIdCollection(payload) {
 				msg: `the_field id is_required`
 			});
 
-		payload.collection.update(
-			{ _id: payload.id },
+		payload.collection.findByIdAndUpdate(
+			payload.id,
 			{ $inc: payload.inc },
 			(err, dataBaseResp) => {
 				if (err)

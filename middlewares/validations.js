@@ -124,6 +124,7 @@ const follows = require('../models/follow');
 const posts = require('../models/post/post');
 const licenses = require('../models/license');
 const likes = require('../models/post/like');
+const comments = require('../models/post/comment');
 
 const models = {
     companies: () => companies,
@@ -140,5 +141,6 @@ const models = {
     follows: () => follows,
     posts: () => posts,
     likes: () => likes,
-    licenses: () => licenses
+    licenses: () => licenses,
+    comments: ()=> comments
 }
