@@ -42,8 +42,8 @@ api.delete('/users/:id', compose([
 api.get('/users/image/:id/:file', userCtrl.getImage);
 // 7. Register user
 api.post('/users/register', compose([
-    // authMiddleware.authMiddlewareFirstActionFunction,
-    validationsMiddleware.validationsMiddlewareFunction
+    //authMiddleware.authMiddlewareFirstActionFunction,
+    //validationsMiddleware.validationsMiddlewareFunction
 ]), userCtrl.userRegister);
 // 8. Login user
 api.post('/users/login', userCtrl.userLogin);

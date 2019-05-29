@@ -70,4 +70,10 @@ app.use('/api/v1', postRoutes);
 app.use('/api/v1', likeRoutes);
 app.use('/api/v1', commentRoutes);
 
-module.exports = app;
+// 7. sockets
+
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+require('./sockets/post')(io);
+
+module.exports = server;

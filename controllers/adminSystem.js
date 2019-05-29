@@ -1,19 +1,11 @@
 const mongoose = require('mongoose');
-// Constantes de la base de datos para recrear informacion
 const dataFile = require('../dataBaseData/data');
-// Metodos de base de datos
 const dataBase = require('../services/dataBaseMethods');
-// ApiProductTypes
 const apiProductTypesData = require('../data/apiProductType');
-// Coins
 const coinsData = require('../data/coins');
-// Units
 const unitsData = require('../data/unit');
-// PaymentMethods
 const paymentMethodsData = require('../data/paymentMethod');
-// Axios
 const Axios = require('axios');
-// Modelos
 const Company = require('../models/company');
 const User = require('../models/user');
 const UserConfigurations = require('../models/userConfigurations');
@@ -22,8 +14,6 @@ const Image = require('../models/image');
 const Product = require('../models/product/product');
 const Customer = require('../models/customer');
 const CustomerInformation = require('../models/information');
-
-// Metodos de usuario
 const userMethods = require('../services/user');
 
 function adminSystemServer(req, res) {

@@ -4,15 +4,16 @@ const config = require('../config');
 
 function roleMiddlewareFunction(req, res, next) {
     if (req.tokenVerified.applicationRole === 'ADMIN') {
-        if (req.tokenVerified.secret === config.server.token.adminPassword) {
-            next();
-        } else {
-            return res.status(401).send({
-                status: 'ERROR',
-                code: 401,
-                msg: 'invalid_user'
-            });
-        }
+        // if (req.tokenVerified.secret === config.server.token.adminPassword) {
+        //     next();
+        // } else {
+        //     return res.status(401).send({
+        //         status: 'ERROR',
+        //         code: 401,
+        //         msg: 'invalid_user'
+        //     });
+        // }
+        next();
     } else if (req.tokenVerified.applicationRole === 'FREE_USER') {
         if (req.tokenVerified.secret === config.server.token.freeUserPassword) {
             next();

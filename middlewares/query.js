@@ -20,8 +20,8 @@ function queryMiddlewareFunction(req, res, next) {
     req.query.populate = req.query.populate ? populateMethods.populateQuery(req.query.populate) : [];;
 
     // Query
-    req.query.query = req.query.search || req.query.filters ?
-    queryMethods.query(req.query.search, req.query.filters, req.route.path.split('/')[1]) : {};
+    req.query.query = req.query.search || req.query.filter ?
+    queryMethods.query(req.query.search, req.query.filter, req.route.path.split('/')[1]) : {};
     next();
 }
 
