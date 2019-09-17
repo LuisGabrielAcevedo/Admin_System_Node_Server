@@ -4,6 +4,7 @@ const dataBase = require('../services/dataBaseMethods');
 const apiProductTypesData = require('../data/apiProductType');
 const coinsData = require('../data/coins');
 const unitsData = require('../data/unit');
+const languagesData = require('../data/languages');
 const paymentMethodsData = require('../data/paymentMethod');
 const Axios = require('axios');
 const Company = require('../models/company');
@@ -381,6 +382,16 @@ function saveCustomer(customer){
     })
 }
 
+// 9. Languages
+function languages(req, res) {
+    res.status(200).send({
+        status: 'OK',
+        code: 200,
+        msg: 'Lista de idiomas (API) encontrada',
+        data: languagesData
+    })
+}
+
 module.exports = {
     adminSystemServer,
     adminSystem,
@@ -391,5 +402,6 @@ module.exports = {
     paymentMethods,
     randomUsers,
     randomProducts,
-    randomCustomers
+    randomCustomers,
+    languages
 }

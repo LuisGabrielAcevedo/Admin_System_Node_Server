@@ -5,23 +5,25 @@ const api = express.Router();
 // 1. Prueba Admin System Server
 api.get('/', adminSystemCtrl.adminSystemServer);
 // 1. Prueba del controlador
-api.get('/adminSystem', adminSystemCtrl.adminSystem);
+api.get('/admin-system', adminSystemCtrl.adminSystem);
 // 2. Obtener api product types
-api.get('/apiProductTypes', adminSystemCtrl.apiProductTypes);
+api.get('/admin-system/apiProductTypes', adminSystemCtrl.apiProductTypes);
 // 3. Cargar datos en la base de datos
-api.post('/loadDataBaseData', adminSystemCtrl.loadDataBaseData);
+api.post('/admin-system/loadDataBaseData', adminSystemCtrl.loadDataBaseData);
 // 4. Unidades de medida
-api.get('/units', adminSystemCtrl.units);
+api.get('/admin-system/units', adminSystemCtrl.units);
 // 5. Monedas
-api.get('/coins', adminSystemCtrl.coins);
+api.get('/admin-system/currecies', adminSystemCtrl.coins);
 // 6. Metodos de pago
-api.get('/payment-methods', adminSystemCtrl.paymentMethods);
+api.get('/admin-system/payment-methods', adminSystemCtrl.paymentMethods);
 // 7. Generar usuarios 
-api.post('/random-users', adminSystemCtrl.randomUsers);
+api.post('/admin-system/random-users', adminSystemCtrl.randomUsers);
 // 8. Generar productos
-api.post('/random-products', adminSystemCtrl.randomProducts);
+api.post('/admin-system/random-products', adminSystemCtrl.randomProducts);
 // 8. Generar customers
-api.post('/random-customers', adminSystemCtrl.randomCustomers);
+api.post('/admin-system/random-customers', adminSystemCtrl.randomCustomers);
+// 9. Languages
+api.post('/admin-system/languages', adminSystemCtrl.languages);
 
 
 module.exports = api;
