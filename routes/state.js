@@ -24,7 +24,8 @@ api.get('/states', compose([
 // 3. Get state
 api.get('/states/:id', compose([
     authMiddleware.authMiddlewareFirstActionFunction,
-    roleMiddleware.roleMiddlewareFunction
+    roleMiddleware.roleMiddlewareFunction,
+    queryMiddleware.queryMiddlewareFunction
 ]), stateCtrl.findState);
 // 4. Update state
 api.put('/states/:id', compose([
