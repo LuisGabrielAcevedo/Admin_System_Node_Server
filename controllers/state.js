@@ -28,7 +28,8 @@ async function getStates(req, res) {
         query: req.query.query,
         sort: req.query.sort,
         pagination: req.query.pagination,
-        unselectFields: ['__v']
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -43,7 +44,8 @@ async function findState(req, res) {
     const payload = {
         id: req.params.id,
         collection: State,
-        unselectFields: ['__v']
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findByIdCollection(payload);
