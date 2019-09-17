@@ -1,17 +1,17 @@
-const Country = require('../models/country');
+const State = require('../models/state');
 const dataBase = require('../services/dataBaseMethods');
 
-// 0. Country controller
-function country(req, res) {
-    res.status(200).send({ msg: 'Country controller works' });
+// 0. State controller
+function state(req, res) {
+    res.status(200).send({ msg: 'State controller works' });
 }
 
-// 1. Save country
-async function saveCountry(req, res) {
+// 1. Save state
+async function saveState(req, res) {
     const payload = {
         repeatedFieldsOr: ['name', 'code'],
         requestData: req.body,
-        collection: Country
+        collection: State
     }
     try {
         const resp = await dataBase.saveCollection(payload);
@@ -21,10 +21,10 @@ async function saveCountry(req, res) {
     }
 }
 
-// 2. Get countries
-async function getCountries(req, res) {
+// 2. Get states
+async function getStates(req, res) {
     const payload = {
-        collection: Country,
+        collection: State,
         query: req.query.query,
         sort: req.query.sort,
         pagination: req.query.pagination,
@@ -38,11 +38,11 @@ async function getCountries(req, res) {
     }
 }
 
-// 3. Get country
-async function findCountry(req, res) {
+// 3. Get state
+async function findState(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Country,
+        collection: State,
         unselectFields: ['__v']
     }
     try {
@@ -53,11 +53,11 @@ async function findCountry(req, res) {
     }
 }
 
-// 4. Update country
-async function updateCountry(req, res) {
+// 4. Update state
+async function updateState(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Country,
+        collection: State,
         requestData: req.body
     }
     try {
@@ -68,11 +68,11 @@ async function updateCountry(req, res) {
     }
 }
 
-// 5. Delete country
-async function deleteCountry(req, res) {
+// 5. Delete state
+async function deleteState(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Country
+        collection: State
     }
     try {
         const resp = await dataBase.deleteIdCollection(payload);
@@ -83,10 +83,10 @@ async function deleteCountry(req, res) {
 }
 
 module.exports = {
-    country,
-    saveCountry,
-    getCountries,
-    findCountry,
-    updateCountry,
-    deleteCountry
+    state,
+    saveState,
+    getStates,
+    findState,
+    updateState,
+    deleteState
 }

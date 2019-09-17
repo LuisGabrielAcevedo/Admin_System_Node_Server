@@ -11,6 +11,7 @@ app.use(fileUpload());
 // 3. Routes
 const dataBaseRoutes = require('./routes/dataBase');
 const countryRoutes = require('./routes/country');
+const stateRoutes = require('./routes/state');
 const companyRoutes = require('./routes/company');
 const userRoutes = require('./routes/user');
 const applicationRoutes = require('./routes/application');
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 // 6. Routes
 app.use('/api/v1', dataBaseRoutes);
 app.use('/api/v1', countryRoutes);
+app.use('/api/v1', stateRoutes);
 app.use('/api/v1', companyRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', applicationRoutes);

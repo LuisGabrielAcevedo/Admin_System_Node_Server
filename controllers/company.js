@@ -89,7 +89,7 @@ async function getImage(req, res) {
 	}
 }
 
-// 6. Get company image
+// 6. Get company
 async function findCompany(req, res) {
     const payload = {
         id: req.params.id,

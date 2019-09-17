@@ -37,7 +37,8 @@ api.get('/companies/image/:id/:file', companyCtrl.getImage);
 // 6. Get company
 api.get('/companies/:id', compose([
     authMiddleware.authMiddlewareFirstActionFunction,
-    roleMiddleware.roleMiddlewareFunction
+    roleMiddleware.roleMiddlewareFunction,
+    queryMiddleware.queryMiddlewareFunction
 ]), companyCtrl.findCompany);
 
 module.exports = api;
