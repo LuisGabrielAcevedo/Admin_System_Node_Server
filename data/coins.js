@@ -13,13 +13,13 @@ const coinsData = [
     },
     {
         id: "USD",
-        name: "US Dollars",
+        name: "US Dollar",
         code: "USD",
         symbol: "$"
     },
     {
         id: "VEB",
-        name: "Venezuela Bolivar Soberano",
+        name: "Sovereign Bolivar",
         code: "VEB",
         symbol: "BS S"
     }

@@ -23,7 +23,7 @@ api.post('/admin-system/random-products', adminSystemCtrl.randomProducts);
 // 8. Generar customers
 api.post('/admin-system/random-customers', adminSystemCtrl.randomCustomers);
 // 9. Languages
-api.post('/admin-system/languages', adminSystemCtrl.languages);
+api.get('/admin-system/languages', adminSystemCtrl.languages);
 
 
 module.exports = api;
