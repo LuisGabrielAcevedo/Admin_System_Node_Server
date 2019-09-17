@@ -13,7 +13,7 @@ api.post('/admin-system/loadDataBaseData', adminSystemCtrl.loadDataBaseData);
 // 4. Unidades de medida
 api.get('/admin-system/units', adminSystemCtrl.units);
 // 5. Monedas
-api.get('/admin-system/currecies', adminSystemCtrl.coins);
+api.get('/admin-system/currencies', adminSystemCtrl.coins);
 // 6. Metodos de pago
 api.get('/admin-system/payment-methods', adminSystemCtrl.paymentMethods);
 // 7. Generar usuarios 
