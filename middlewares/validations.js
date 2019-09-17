@@ -125,6 +125,7 @@ const posts = require('../models/post/post');
 const licenses = require('../models/license');
 const likes = require('../models/post/like');
 const comments = require('../models/post/comment');
+const states = require('../models/state');
 
 const models = {
     companies: () => companies,
@@ -142,5 +143,6 @@ const models = {
     posts: () => posts,
     likes: () => likes,
     licenses: () => licenses,
-    comments: ()=> comments
+    comments: ()=> comments,
+    states: () => states
 }
