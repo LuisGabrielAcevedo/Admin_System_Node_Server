@@ -1,10 +1,6 @@
 // Modelos
 const Product = require('../../models/product/product');
-const Company = require('../../models/company');
-const ProductCategory = require('../../models/product/productCategory');
 const dataBase = require('../../services/dataBaseMethods');
-const queryMethods = require('../../services/query');
-const validation = require('../../services/validation');
 const fileMethods = require('../../services/fileMethods');
 const path = require('path');
 
@@ -31,53 +27,13 @@ async function saveProduct(req, res) {
 
 // 2. Buscar productos
 async function getProducts(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
         collection: Product,
-        query: query,
-        sort: req.query.sort ? req.query.sort : '-updatedAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
+        query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        populateFields: [
-            {
-                path: 'category',
-                select: { name: 1 }
-            },
-            {
-                path: 'company',
-                select: { name: 1 }
-            },
-            {
-                path: 'brand',
-                select: { name: 1 }
-            },
-            {
-                path: 'type',
-                select: { name: 1 }
-            },
-            {
-                path: 'profileImage',
-                select: { url: 1 }
-            }
-        ],
-        // filters: [
-        //     {
-        //         field: 'company',
-        //         collection: Company
-        //     },
-        //     {
-        //         field: 'category',
-        //         collection: ProductCategory
-        //     }
-        // ],
+        populateFields: req.query.populate
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -98,7 +54,6 @@ async function updateProduct(req, res) {
         fileField: 'profileImage'
     }
     try {
-        // await validation.body(Product, req.body);
         const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
@@ -121,50 +76,7 @@ async function getImage(req, res) {
     }
 }
 
-// 5. Obtener lista de productos
-async function simpleSearch(req, res) {
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-    const payload = {
-        collection: Product,
-        query: query,
-        sort: req.query.sort ? req.query.sort : '-updatedAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
-        unselectFields: ['__v'],
-        populateFields: [
-            {
-                path: 'category',
-                select: { name: 1 }
-            },
-            {
-                path: 'company',
-                select: { name: 1 }
-            },
-            {
-                path: 'brand',
-                select: { name: 1 }
-            },
-            {
-                path: 'type',
-                select: { name: 1 }
-            },
-            {
-                path: 'profileImage',
-                select: { url: 1 }
-            }
-        ]
-    }
-    try {
-        const resp = await dataBase.findCollection(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
-// 3. Borrar marcas
+// 5. Delete product
 async function removeProduct(req, res) {
     const payload = {
         id: req.params.id,
@@ -178,6 +90,21 @@ async function removeProduct(req, res) {
     }
 }
 
+async function findProduct(req, res) {
+    const payload = {
+        id: req.params.id,
+        collection: Product,
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
+    }
+    try {
+        const resp = await dataBase.findByIdCollection(payload);
+        return res.status(resp.code).send(resp);
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
+
 
 module.exports = {
     saveProduct,
@@ -185,6 +112,6 @@ module.exports = {
     getProducts,
     updateProduct,
     getImage,
-    simpleSearch,
-    removeProduct
+    removeProduct,
+    findProduct
 }

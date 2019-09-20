@@ -51,7 +51,7 @@ async function getUsers(req, res) {
 }
 
 
-// 3. Get users
+// 3. find user
 async function findUser(req, res) {
     const payload = {
         id: req.params.id,
