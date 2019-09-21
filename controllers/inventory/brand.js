@@ -1,5 +1,5 @@
 // Modelos
-const Vendor = require('../../models/product/vendor');
+const Brand = require('../../models/inventory/brand');
 // Metodos de base de datos
 const dataBase = require('../../services/dataBaseMethods');
 // Metodos para manejar queries de busqueda
@@ -7,20 +7,19 @@ const queryMethods = require('../../services/query');
 // Metodos de validacion
 const validation = require('../../services/validation');
 
-
 // 0. Funcion de prueba del controlador
-function vendor(req, res) {
-    res.status(200).send({ msg: 'Controlador de vendedor/proveedor funcionando' })
+function brand(req, res) {
+    res.status(200).send({ msg: 'Controlador de categorias de productos funcionando' })
 }
-
-// 1. Guagar un vendedor de producto
-async function saveVendor(req, res) {
+// 1. Guagar una marca de producto
+async function saveBrand(req, res) {
     const payload = {
+        requiredFields: ['name', 'company'],
         requestData: req.body,
-        collection: Vendor
+        collection: Brand
     }
     try {
-        await validation.body(Vendor, req.body, 'POST');
+        await validation.body(Brand, req.body, 'POST');
         const resp = await dataBase.saveCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
@@ -28,17 +27,22 @@ async function saveVendor(req, res) {
     }
 }
 
-// 2. Obtener vendedores buscador
+// 2. Obtener marcas buscador
 async function simpleSearch(req, res) {
-    const searchFields = ['vendorName'];
+    if (req.tokenVerified.company) {
+        req.query.filters = {
+            company: req.tokenVerified.company
+        }
+    }
+    const searchFields = ['name'];
     const query =
         req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
-        collection: Vendor,
+        collection: Brand,
         query: query,
         unselectFields: ['__v'],
-        sort: req.query.sort ? req.query.sort : 'updatedAt'
+        sort: req.query.sort ? req.query.sort : 'createdAt'
     };
     try {
         const resp = await dataBase.findCollection(payload);
@@ -50,11 +54,11 @@ async function simpleSearch(req, res) {
 
 
 
-// 3. Borrar vendedor
-async function removeVendor(req, res) {
+// 3. Borrar marcas
+async function removeBrand(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Vendor
+        collection: Brand
     }
     try {
         const resp = await dataBase.deleteIdCollection(payload);
@@ -65,15 +69,15 @@ async function removeVendor(req, res) {
 }
 
 
-// 4. Actualizar vendedores
-async function updateVendor(req, res) {
+// 4. Actualizar marcas
+async function updateBrand(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Vendor,
+        collection: Brand,
         requestData: req.body
     }
     try {
-        await validation.body(Vendor, req.body);
+        await validation.body(Brand, req.body);
         const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
@@ -81,25 +85,37 @@ async function updateVendor(req, res) {
     }
 }
 
-
-// 5.   Obtener vendedores
-async function getVendors(req, res) {
-    const searchFields = ['vendorName'];
+// 5.   Obtener marcas
+async function getBrands(req, res) {
+    if (req.tokenVerified.company) {
+        req.query.filters = {
+            company: req.tokenVerified.company
+        }
+    }
+    const searchFields = ['name'];
     const query = req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
-        collection: Vendor,
+        collection: Brand,
         query: query,
-        sort: req.query.sort ? req.query.sort : 'updatedAt',
+        sort: req.query.sort ? req.query.sort : 'createdAt',
         page: req.query.page ? Number(req.query.page) : 1,
         itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
         unselectFields: ['__v'],
         populateFields: [{
-                path: 'createdBy',
-                select: { name: 1, _id: 1 },
-            },
-
-        ]
+            path: 'company',
+            select: { name: 1, _id: 1 }
+        }]
+        // filters: [
+        //     {
+        //         field: 'company',
+        //         collection: Company
+        //     },
+        //     {
+        //         field: 'category',
+        //         collection: ProductCategory
+        //     }
+        // ]
     }
     try {
         const resp = await dataBase.findCollection(payload);
@@ -109,11 +125,12 @@ async function getVendors(req, res) {
     }
 }
 
+
 module.exports = {
-    vendor,
-    saveVendor,
+    saveBrand,
+    brand,
     simpleSearch,
-    updateVendor,
-    removeVendor,
-    getVendors
+    removeBrand,
+    updateBrand,
+    getBrands
 }

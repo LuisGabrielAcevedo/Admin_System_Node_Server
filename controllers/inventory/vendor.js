@@ -1,5 +1,5 @@
 // Modelos
-const ProductType = require('../../models/product/productType');
+const Vendor = require('../../models/inventory/vendor');
 // Metodos de base de datos
 const dataBase = require('../../services/dataBaseMethods');
 // Metodos para manejar queries de busqueda
@@ -7,19 +7,20 @@ const queryMethods = require('../../services/query');
 // Metodos de validacion
 const validation = require('../../services/validation');
 
+
 // 0. Funcion de prueba del controlador
-function productType(req, res) {
-    res.status(200).send({ msg: 'Controlador de tipos de productos funcionando' })
+function vendor(req, res) {
+    res.status(200).send({ msg: 'Controlador de vendedor/proveedor funcionando' })
 }
 
-// 1. Guagar un tipo de producto
-async function saveProductType(req, res) {
+// 1. Guagar un vendedor de producto
+async function saveVendor(req, res) {
     const payload = {
         requestData: req.body,
-        collection: ProductType
+        collection: Vendor
     }
     try {
-        await validation.body(ProductType, req.body, 'POST');
+        await validation.body(Vendor, req.body, 'POST');
         const resp = await dataBase.saveCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
@@ -27,19 +28,14 @@ async function saveProductType(req, res) {
     }
 }
 
-// 2. Obtener tipos de producto buscador
+// 2. Obtener vendedores buscador
 async function simpleSearch(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-    const searchFields = ['name'];
+    const searchFields = ['vendorName'];
     const query =
         req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
-        collection: ProductType,
+        collection: Vendor,
         query: query,
         unselectFields: ['__v'],
         sort: req.query.sort ? req.query.sort : 'updatedAt'
@@ -50,14 +46,15 @@ async function simpleSearch(req, res) {
     } catch (err) {
         return res.status(err.code).send(err);
     }
-
 }
 
-// 3. Borrar producto
-async function removeProductType(req, res) {
+
+
+// 3. Borrar vendedor
+async function removeVendor(req, res) {
     const payload = {
         id: req.params.id,
-        collection: ProductType
+        collection: Vendor
     }
     try {
         const resp = await dataBase.deleteIdCollection(payload);
@@ -68,14 +65,15 @@ async function removeProductType(req, res) {
 }
 
 
-// 4. Actualizar producto
-async function updateProductType(req, res) {
+// 4. Actualizar vendedores
+async function updateVendor(req, res) {
     const payload = {
         id: req.params.id,
-        collection: ProductType,
+        collection: Vendor,
         requestData: req.body
     }
     try {
+        await validation.body(Vendor, req.body);
         const resp = await dataBase.updateIdCollection(payload);
         return res.status(resp.code).send(resp)
     } catch (err) {
@@ -83,27 +81,24 @@ async function updateProductType(req, res) {
     }
 }
 
-// 5.   Obtener marcas
-async function getProductTypes(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-    const searchFields = ['name'];
+
+// 5.   Obtener vendedores
+async function getVendors(req, res) {
+    const searchFields = ['vendorName'];
     const query = req.query.search || req.query.filters ?
         queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
     const payload = {
-        collection: ProductType,
+        collection: Vendor,
         query: query,
         sort: req.query.sort ? req.query.sort : 'updatedAt',
         page: req.query.page ? Number(req.query.page) : 1,
         itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
         unselectFields: ['__v'],
         populateFields: [{
-                path: 'company',
+                path: 'createdBy',
                 select: { name: 1, _id: 1 },
             },
+
         ]
     }
     try {
@@ -115,10 +110,10 @@ async function getProductTypes(req, res) {
 }
 
 module.exports = {
-    saveProductType,
-    productType,
+    vendor,
+    saveVendor,
     simpleSearch,
-    removeProductType,
-    updateProductType,
-    getProductTypes
+    updateVendor,
+    removeVendor,
+    getVendors
 }

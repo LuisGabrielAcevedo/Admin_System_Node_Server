@@ -1,5 +1,5 @@
 // Modelos
-const Product = require('../../models/product/product');
+const Product = require('../../models/inventory/product');
 const dataBase = require('../../services/dataBaseMethods');
 const fileMethods = require('../../services/fileMethods');
 const path = require('path');

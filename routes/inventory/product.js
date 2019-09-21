@@ -1,5 +1,5 @@
 const express = require('express');
-const productCtrl = require('../../controllers/product/product');
+const productCtrl = require('../../controllers/inventory/product');
 const api = express.Router();
 const authMiddleware = require('../../middlewares/auth');
 const roleMiddleware = require('../../middlewares/roles');
