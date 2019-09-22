@@ -1,26 +1,18 @@
-// Modelos
 const Vendor = require('../../models/inventory/vendor');
-// Metodos de base de datos
 const dataBase = require('../../services/dataBaseMethods');
-// Metodos para manejar queries de busqueda
-const queryMethods = require('../../services/query');
-// Metodos de validacion
-const validation = require('../../services/validation');
 
-
-// 0. Funcion de prueba del controlador
+// 0. Vendor Controller
 function vendor(req, res) {
-    res.status(200).send({ msg: 'Controlador de vendedor/proveedor funcionando' })
+    res.status(200).send({ msg: 'Vendor controller works' })
 }
 
-// 1. Guagar un vendedor de producto
+// 1. Save vendor
 async function saveVendor(req, res) {
     const payload = {
         requestData: req.body,
         collection: Vendor
     }
     try {
-        await validation.body(Vendor, req.body, 'POST');
         const resp = await dataBase.saveCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
@@ -28,18 +20,16 @@ async function saveVendor(req, res) {
     }
 }
 
-// 2. Obtener vendedores buscador
-async function simpleSearch(req, res) {
-    const searchFields = ['vendorName'];
-    const query =
-        req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
+// 2. Get vendors
+async function getVendors(req, res) {
     const payload = {
         collection: Vendor,
-        query: query,
+        query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        sort: req.query.sort ? req.query.sort : 'updatedAt'
-    };
+        populateFields: req.query.populate
+    }
     try {
         const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp);
@@ -48,24 +38,24 @@ async function simpleSearch(req, res) {
     }
 }
 
-
-
-// 3. Borrar vendedor
-async function removeVendor(req, res) {
+// 3. Find vendor
+async function findVendor(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Vendor
+        collection: Vendor,
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
     }
     try {
-        const resp = await dataBase.deleteIdCollection(payload);
-        return res.status(resp.code).send(resp)
+        const resp = await dataBase.findByIdCollection(payload);
+        return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
     }
 }
 
 
-// 4. Actualizar vendedores
+// 4. Update vendor
 async function updateVendor(req, res) {
     const payload = {
         id: req.params.id,
@@ -73,36 +63,21 @@ async function updateVendor(req, res) {
         requestData: req.body
     }
     try {
-        await validation.body(Vendor, req.body);
         const resp = await dataBase.updateIdCollection(payload);
-        return res.status(resp.code).send(resp)
+        return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
     }
 }
 
-
-// 5.   Obtener vendedores
-async function getVendors(req, res) {
-    const searchFields = ['vendorName'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
+// 4. Delete vendor
+async function deleteVendor(req, res) {
     const payload = {
-        collection: Vendor,
-        query: query,
-        sort: req.query.sort ? req.query.sort : 'updatedAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
-        unselectFields: ['__v'],
-        populateFields: [{
-                path: 'createdBy',
-                select: { name: 1, _id: 1 },
-            },
-
-        ]
-    }
+        id: req.params.id,
+        collection: Vendor
+    };
     try {
-        const resp = await dataBase.findCollection(payload);
+        const resp = await dataBase.deleteIdCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
@@ -112,8 +87,8 @@ async function getVendors(req, res) {
 module.exports = {
     vendor,
     saveVendor,
-    simpleSearch,
     updateVendor,
-    removeVendor,
-    getVendors
+    deleteVendor,
+    getVendors,
+    findVendor
 }

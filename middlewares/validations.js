@@ -95,7 +95,7 @@ function validationsMiddlewareFunction(req, res, next) {
                         status: 'WARNING',
                         code: 422,
                         msg: 'User without permission to follow'
-                    })
+                    }) 
                 } 
                 next();
             } else {
@@ -113,7 +113,6 @@ const companies = require('../models/company');
 const users = require('../models/user');
 const userConfigurations = require('../models/userConfigurations');
 const information = require('../models/information');
-const products = require('../models/inventory/product');
 const customers = require('../models/customer');
 const roles = require('../models/role');
 const permissions = require('../models/permission');
@@ -126,6 +125,9 @@ const licenses = require('../models/license');
 const likes = require('../models/post/like');
 const comments = require('../models/post/comment');
 const states = require('../models/state');
+// Inventory
+const products = require('../models/inventory/product');
+const vendors = require('../models/inventory/vendor');
 
 const models = {
     companies: () => companies,
@@ -144,5 +146,6 @@ const models = {
     likes: () => likes,
     licenses: () => licenses,
     comments: ()=> comments,
-    states: () => states
+    states: () => states,
+    vendors: () => vendors
 }
