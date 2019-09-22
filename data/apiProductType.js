@@ -1,11 +1,11 @@
 const apiProductType = [
     {
-        _id: '1',
-        name: 'products_with_stock'
+        _id: 'product_with_stock',
+        name: 'Product with stock'
     },
     {
-        _id: '2',
-        name: 'products_without_stock'
+        _id: 'product_without_stock',
+        name: 'Product without stock'
     }
 ]
 

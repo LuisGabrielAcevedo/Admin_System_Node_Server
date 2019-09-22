@@ -1,24 +1,18 @@
-// Modelos
-const ProductCategory = require('../../models/inventory/productCategory');
-// Metodos de base de datos
+const ProductCategories = require('../../models/inventory/productCategory');
 const dataBase = require('../../services/dataBaseMethods');
-// Metodos para manejar queries de busqueda
-const queryMethods = require('../../services/query');
-// Metodos de validacion
-const validation = require('../../services/validation');
 
-// 0. Funcion de prueba del controlador
+// 0. Product category controller
 function productCategory(req, res) {
-    res.status(200).send({ msg: 'Controlador de categorias de productos funcionando' })
+    res.status(200).send({ msg: 'Product category controller works' })
 }
-// 1. Guagar una categoria
+
+// 1. Save product category
 async function saveProductCategory(req, res) {
     const payload = {
         requestData: req.body,
-        collection: ProductCategory
+        collection: ProductCategories
     }
     try {
-        await validation.body(ProductCategory, req.body, 'POST');
         const resp = await dataBase.saveCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
@@ -26,23 +20,16 @@ async function saveProductCategory(req, res) {
     }
 }
 
-// 2. Obtener categorias buscador
-async function simpleSearch(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-    const searchFields = ['name'];
-    const query =
-        req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
+// 2. Get product categories
+async function getProductCategories(req, res) {
     const payload = {
-        collection: ProductCategory,
-        query: query,
+        collection: ProductCategories,
+        query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        sort: req.query.sort ? req.query.sort : '-updatedAt'
-    };
+        populateFields: req.query.populate
+    }
     try {
         const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp);
@@ -51,73 +38,57 @@ async function simpleSearch(req, res) {
     }
 }
 
-// 3. Borrar categorias
-async function removeProductCategory(req, res) {
+// 3. Find product category
+async function findProductCategory(req, res) {
     const payload = {
         id: req.params.id,
-        collection: ProductCategory
+        collection: ProductCategories,
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
     }
     try {
-        const resp = await dataBase.deleteIdCollection(payload);
-        return res.status(resp.code).send(resp)
+        const resp = await dataBase.findByIdCollection(payload);
+        return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
     }
 }
 
-// 4. Actualizar categorias
+
+// 4. Update product category
 async function updateProductCategory(req, res) {
     const payload = {
         id: req.params.id,
-        collection: ProductCategory,
+        collection: ProductCategories,
         requestData: req.body
     }
     try {
-        await validation.body(ProductCategory, req.body);
         const resp = await dataBase.updateIdCollection(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
-// 5.   Obtener categorias
-async function getProductCategories(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-    const payload = {
-        collection: ProductCategory,
-        query: query,
-        sort: req.query.sort ? req.query.sort : '-updatedAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
-        unselectFields: ['__v'],
-        populateFields: [{
-            path: 'company',
-            select: { name: 1, _id: 1 }
-        }]
-    }
-    try {
-        const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
     }
 }
 
+// 4. Delete product category
+async function deleteProductCategory(req, res) {
+    const payload = {
+        id: req.params.id,
+        collection: ProductCategories
+    };
+    try {
+        const resp = await dataBase.deleteIdCollection(payload);
+        return res.status(resp.code).send(resp);
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
 
 module.exports = {
-    saveProductCategory,
     productCategory,
-    simpleSearch,
-    removeProductCategory,
+    saveProductCategory,
     updateProductCategory,
-    getProductCategories
-
+    deleteProductCategory,
+    getProductCategories,
+    findProductCategory
 }

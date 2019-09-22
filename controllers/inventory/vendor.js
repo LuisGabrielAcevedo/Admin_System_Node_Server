@@ -1,7 +1,7 @@
 const Vendor = require('../../models/inventory/vendor');
 const dataBase = require('../../services/dataBaseMethods');
 
-// 0. Vendor Controller
+// 0. Vendor controller
 function vendor(req, res) {
     res.status(200).send({ msg: 'Vendor controller works' })
 }

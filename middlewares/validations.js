@@ -2,7 +2,7 @@ function validationsMiddlewareFunction(req, res, next) {
     let errors = {};
     let errorsStatus = false;
     const method = req.route.stack[0].method;
-    const route = req.route.path.split('/')[1];
+    let route = req.route.path.split('/')[1];
     const body = req.body;
     if (Object.entries(body).length === 0 && body.constructor === Object) {
         return res.status(422).send({
@@ -11,6 +11,9 @@ function validationsMiddlewareFunction(req, res, next) {
             msg: `The body is empty, please send data to ${method === 'post' ? 'save' : 'update'}`
         });
     } else {
+        if (route.includes('-')) {
+            route = route.split('-').join('');
+        }
         const collection = models[route]();
         for (const field in collection.schema.paths) {
             if (collection.schema.paths[field].isRequired) {
@@ -128,6 +131,9 @@ const states = require('../models/state');
 // Inventory
 const products = require('../models/inventory/product');
 const vendors = require('../models/inventory/vendor');
+const brands = require('../models/inventory/brand');
+const productCategories = require('../models/inventory/productCategory');
+const productTypes = require('../models/inventory/productType');
 
 const models = {
     companies: () => companies,
@@ -147,5 +153,8 @@ const models = {
     licenses: () => licenses,
     comments: ()=> comments,
     states: () => states,
-    vendors: () => vendors
+    vendors: () => vendors,
+    brands: () => brands,
+    productcategories: () => productCategories,
+    producttypes: () => productTypes
 }

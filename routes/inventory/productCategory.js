@@ -1,19 +1,29 @@
 const express = require('express');
 const productCategoryCtrl = require('../../controllers/inventory/productCategory');
 const api = express.Router();
-const authMiddleware = require('../../middlewares/auth');
+const compose = require('compose-middleware').compose;
+const queryMiddleware = require('../../middlewares/query');
+const validationsMiddleware = require('../../middlewares/validations');
 
-// 0. Prueba del controlador
+// 0. Product category controller
 api.get('/product-categories/controller', productCategoryCtrl.productCategory);
-// 1. Guagar una categoria
-api.post('/product-categories', authMiddleware.authMiddlewareFirstActionFunction, productCategoryCtrl.saveProductCategory);
-// 2. Obtener categorias buscador
-api.get('/product-categories/search/all-list', authMiddleware.authMiddlewareFirstActionFunction, productCategoryCtrl.simpleSearch);
-// 3. Borrar una categoria
-api.delete('/product-categories/:id', authMiddleware.authMiddlewareFirstActionFunction, productCategoryCtrl.removeProductCategory);
-// 4. Actualizar un producto
-api.put('/product-categories/:id', authMiddleware.authMiddlewareFirstActionFunction, productCategoryCtrl.updateProductCategory);
-// 5. Obtener categorias
-api.get('/product-categories', authMiddleware.authMiddlewareFirstActionFunction, productCategoryCtrl.getProductCategories);
+// 1. Save product category
+api.post('/product-categories', compose([
+    validationsMiddleware.validationsMiddlewareFunction
+]), productCategoryCtrl.saveProductCategory);
+// 2. Get product categories
+api.get('/product-categories', compose([
+    queryMiddleware.queryMiddlewareFunction
+]), productCategoryCtrl.getProductCategories);
+// 3. Find product category
+api.get('/product-categories/:id', compose([
+    queryMiddleware.queryMiddlewareFunction
+]), productCategoryCtrl.findProductCategory);
+// 4. Update product category
+api.put('/product-categories/:id', compose([
+    validationsMiddleware.validationsMiddlewareFunction
+]), productCategoryCtrl.updateProductCategory);
+// 5. Delete product category
+api.delete('/product-categories/:id', compose([]), productCategoryCtrl.deleteProductCategory);
 
 module.exports = api;

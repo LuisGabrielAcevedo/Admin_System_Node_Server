@@ -1,19 +1,29 @@
 const express = require('express');
 const brandCtrl = require('../../controllers/inventory/brand');
 const api = express.Router();
-const authMiddleware = require('../../middlewares/auth');
+const compose = require('compose-middleware').compose;
+const queryMiddleware = require('../../middlewares/query');
+const validationsMiddleware = require('../../middlewares/validations');
 
-// 0. Prueba del controlador
+// 0. Brand controller
 api.get('/brands/controller', brandCtrl.brand);
-// 1. Guagar una marca
-api.post('/brands', authMiddleware.authMiddlewareFirstActionFunction, brandCtrl.saveBrand);
-// 2. Obtener marcas buscador
-api.get('/brands/search/all-list', authMiddleware.authMiddlewareFirstActionFunction, brandCtrl.simpleSearch);
-// 3. Borrar una marca
-api.delete('/brands/:id', authMiddleware.authMiddlewareFirstActionFunction, brandCtrl.removeBrand);
-// 4. Actualizar una marca
-api.put('/brands/:id', authMiddleware.authMiddlewareFirstActionFunction, brandCtrl.updateBrand);
-// 5. Buscar marcas
-api.get('/brands', authMiddleware.authMiddlewareFirstActionFunction, brandCtrl.getBrands);
+// 1. Save brand
+api.post('/brands', compose([
+    validationsMiddleware.validationsMiddlewareFunction
+]), brandCtrl.saveBrand);
+// 2. Get brands
+api.get('/brands', compose([
+    queryMiddleware.queryMiddlewareFunction
+]), brandCtrl.getBrands);
+// 3. Find brand
+api.get('/brands/:id', compose([
+    queryMiddleware.queryMiddlewareFunction
+]), brandCtrl.findBrand);
+// 4. Update brand
+api.put('/brands/:id', compose([
+    validationsMiddleware.validationsMiddlewareFunction
+]), brandCtrl.updateBrand);
+// 5. Delete brand
+api.delete('/brands/:id', compose([]), brandCtrl.deleteBrand);
 
 module.exports = api;

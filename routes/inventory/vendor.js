@@ -2,7 +2,6 @@ const express = require('express');
 const vendorCtrl = require('../../controllers/inventory/vendor');
 const api = express.Router();
 const compose = require('compose-middleware').compose;
-const authMiddleware = require('../../middlewares/auth');
 const queryMiddleware = require('../../middlewares/query');
 const validationsMiddleware = require('../../middlewares/validations');
 

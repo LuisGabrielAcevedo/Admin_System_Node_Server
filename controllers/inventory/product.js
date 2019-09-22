@@ -1,21 +1,16 @@
-// Modelos
 const Product = require('../../models/inventory/product');
 const dataBase = require('../../services/dataBaseMethods');
-const fileMethods = require('../../services/fileMethods');
-const path = require('path');
 
-// 0. Funcion de prueba del controlador
+// 0. Product controller
 function product(req, res) {
-    res.status(200).send({ msg: 'Controlador productos funcionando' })
+    res.status(200).send({ msg: 'Product controller works' })
 }
-// 1. Guagar un producto
+
+// 1. Save product 
 async function saveProduct(req, res) {
     const payload = {
-        requiredFields: ['name', 'company', 'applicationCode', 'price', 'unit'],
         requestData: req.body,
-        collection: Product,
-        successMessage: 'Producto guardado con exito',
-        errorMessage: 'Error guardando producto'
+        collection: Product
     }
     try {
         const resp = await dataBase.saveCollection(payload);
@@ -25,7 +20,7 @@ async function saveProduct(req, res) {
     }
 }
 
-// 2. Buscar productos
+// 2. Get products
 async function getProducts(req, res) {
     const payload = {
         collection: Product,
@@ -43,53 +38,7 @@ async function getProducts(req, res) {
     }
 }
 
-// 3. Actualizar un producto
-async function updateProduct(req, res) {
-    const payload = {
-        id: req.params.id,
-        collection: Product,
-        requestData: req.body,
-        files: req.files,
-        type: 'IMAGE_PRODUCT',
-        fileField: 'profileImage'
-    }
-    try {
-        const resp = await dataBase.updateIdCollection(payload);
-        return res.status(resp.code).send(resp);
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
-// 4. Obtener la imagen del producto
-async function getImage(req, res) {
-    const payload = {
-        id: req.params.id,
-        fileName: req.params.file,
-        path: 'uploads/product'
-    }
-    try {
-        const resp = await fileMethods.getFile(payload);
-        return res.sendFile(path.resolve(resp.url));
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
-// 5. Delete product
-async function removeProduct(req, res) {
-    const payload = {
-        id: req.params.id,
-        collection: Product
-    }
-    try {
-        const resp = await dataBase.deleteIdCollection(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
+// 3. Find product 
 async function findProduct(req, res) {
     const payload = {
         id: req.params.id,
@@ -106,12 +55,40 @@ async function findProduct(req, res) {
 }
 
 
+// 4. Update product 
+async function updateProduct(req, res) {
+    const payload = {
+        id: req.params.id,
+        collection: Product,
+        requestData: req.body
+    }
+    try {
+        const resp = await dataBase.updateIdCollection(payload);
+        return res.status(resp.code).send(resp);
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
+
+// 4. Delete product 
+async function deleteProduct(req, res) {
+    const payload = {
+        id: req.params.id,
+        collection: Product
+    };
+    try {
+        const resp = await dataBase.deleteIdCollection(payload);
+        return res.status(resp.code).send(resp);
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
+
 module.exports = {
-    saveProduct,
     product,
-    getProducts,
+    saveProduct,
     updateProduct,
-    getImage,
-    removeProduct,
+    deleteProduct,
+    getProducts,
     findProduct
 }

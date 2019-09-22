@@ -7,7 +7,7 @@ api.get('/', adminSystemCtrl.adminSystemServer);
 // 1. Prueba del controlador
 api.get('/admin-system', adminSystemCtrl.adminSystem);
 // 2. Obtener api product types
-api.get('/admin-system/apiProductTypes', adminSystemCtrl.apiProductTypes);
+api.get('/admin-system/api-product-types', adminSystemCtrl.apiProductTypes);
 // 3. Cargar datos en la base de datos
 api.post('/admin-system/loadDataBaseData', adminSystemCtrl.loadDataBaseData);
 // 4. Unidades de medida

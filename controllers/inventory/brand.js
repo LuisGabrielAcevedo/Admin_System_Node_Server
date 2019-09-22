@@ -1,25 +1,18 @@
-// Modelos
 const Brand = require('../../models/inventory/brand');
-// Metodos de base de datos
 const dataBase = require('../../services/dataBaseMethods');
-// Metodos para manejar queries de busqueda
-const queryMethods = require('../../services/query');
-// Metodos de validacion
-const validation = require('../../services/validation');
 
-// 0. Funcion de prueba del controlador
+// 0. Brand controller
 function brand(req, res) {
-    res.status(200).send({ msg: 'Controlador de categorias de productos funcionando' })
+    res.status(200).send({ msg: 'Brand controller works' })
 }
-// 1. Guagar una marca de producto
+
+// 1. Save brand
 async function saveBrand(req, res) {
     const payload = {
-        requiredFields: ['name', 'company'],
         requestData: req.body,
         collection: Brand
     }
     try {
-        await validation.body(Brand, req.body, 'POST');
         const resp = await dataBase.saveCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
@@ -27,23 +20,16 @@ async function saveBrand(req, res) {
     }
 }
 
-// 2. Obtener marcas buscador
-async function simpleSearch(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-    const searchFields = ['name'];
-    const query =
-        req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
+// 2. Get brands
+async function getBrands(req, res) {
     const payload = {
         collection: Brand,
-        query: query,
+        query: req.query.query,
+        sort: req.query.sort,
+        pagination: req.query.pagination,
         unselectFields: ['__v'],
-        sort: req.query.sort ? req.query.sort : 'createdAt'
-    };
+        populateFields: req.query.populate
+    }
     try {
         const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp);
@@ -52,24 +38,24 @@ async function simpleSearch(req, res) {
     }
 }
 
-
-
-// 3. Borrar marcas
-async function removeBrand(req, res) {
+// 3. Find brand
+async function findBrand(req, res) {
     const payload = {
         id: req.params.id,
-        collection: Brand
+        collection: Brand,
+        unselectFields: ['__v'],
+        populateFields: req.query.populate
     }
     try {
-        const resp = await dataBase.deleteIdCollection(payload);
-        return res.status(resp.code).send(resp)
+        const resp = await dataBase.findByIdCollection(payload);
+        return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
     }
 }
 
 
-// 4. Actualizar marcas
+// 4. Update brand
 async function updateBrand(req, res) {
     const payload = {
         id: req.params.id,
@@ -77,60 +63,32 @@ async function updateBrand(req, res) {
         requestData: req.body
     }
     try {
-        await validation.body(Brand, req.body);
         const resp = await dataBase.updateIdCollection(payload);
-        return res.status(resp.code).send(resp)
-    } catch (err) {
-        return res.status(err.code).send(err);
-    }
-}
-
-// 5.   Obtener marcas
-async function getBrands(req, res) {
-    if (req.tokenVerified.company) {
-        req.query.filters = {
-            company: req.tokenVerified.company
-        }
-    }
-    const searchFields = ['name'];
-    const query = req.query.search || req.query.filters ?
-        queryMethods.query(req.query.search, searchFields, req.query.filters) : {};
-    const payload = {
-        collection: Brand,
-        query: query,
-        sort: req.query.sort ? req.query.sort : 'createdAt',
-        page: req.query.page ? Number(req.query.page) : 1,
-        itemsPerPage: req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10,
-        unselectFields: ['__v'],
-        populateFields: [{
-            path: 'company',
-            select: { name: 1, _id: 1 }
-        }]
-        // filters: [
-        //     {
-        //         field: 'company',
-        //         collection: Company
-        //     },
-        //     {
-        //         field: 'category',
-        //         collection: ProductCategory
-        //     }
-        // ]
-    }
-    try {
-        const resp = await dataBase.findCollection(payload);
         return res.status(resp.code).send(resp);
     } catch (err) {
         return res.status(err.code).send(err);
     }
 }
 
+// 4. Delete brand
+async function deleteBrand(req, res) {
+    const payload = {
+        id: req.params.id,
+        collection: Brand
+    };
+    try {
+        const resp = await dataBase.deleteIdCollection(payload);
+        return res.status(resp.code).send(resp);
+    } catch (err) {
+        return res.status(err.code).send(err);
+    }
+}
 
 module.exports = {
-    saveBrand,
     brand,
-    simpleSearch,
-    removeBrand,
+    saveBrand,
     updateBrand,
-    getBrands
+    deleteBrand,
+    getBrands,
+    findBrand
 }
