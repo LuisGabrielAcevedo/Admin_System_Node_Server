@@ -1,6 +1,9 @@
 const searchFieldsMethods = require('./searchFields');
 
 function query(search, filters, searchRoute) {
+    if (searchRoute.includes('-')) {
+        searchRoute = searchRoute.split('-').join('');
+    }
     const searchFields = searchFieldsMethods.seachFieldsData(searchRoute);
     let orParams = [];
     const andParams = filters ? filters : {};

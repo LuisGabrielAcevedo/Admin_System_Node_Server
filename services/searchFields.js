@@ -11,7 +11,11 @@ const searchBy = {
     countries: () => ['name', 'nameInitials'],
     companies: () => ['name'],
     applications: () => ['name', 'code', 'description'],
-    follows: () => []
+    follows: () => [],
+    vendors: () => ['name'],
+    brands: () => ['name'],
+    productcategories: () => ['name'],
+    producttypes: () => ['name']
 }
 
 module.exports = {
