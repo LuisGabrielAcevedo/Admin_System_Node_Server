@@ -10,6 +10,10 @@ const unitsData = [
     {
         id: 'ounces',
         name: 'oz'
+    },
+    {
+        id: 'u',
+        name: 'unit'
     }
 ]
 
