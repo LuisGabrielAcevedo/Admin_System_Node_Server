@@ -8,8 +8,8 @@ const unitsData = [
         name: 'miligrams'
     },
     {
-        id: 'ounces',
-        name: 'oz'
+        id: 'oz',
+        name: 'ounces'
     },
     {
         id: 'u',
