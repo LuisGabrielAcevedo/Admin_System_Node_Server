@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const ProductSchema = Schema({
     name: { type: String, required: true },
     company: { type: Schema.ObjectId, ref: 'Company', required: true },
+    stores: [{ type: Schema.ObjectId, ref: 'Store', required: true }],
     description: { type: String, default: null },
     details: { type: String, default: null },
     unit: { type: String, default: null },
@@ -12,6 +13,8 @@ const ProductSchema = Schema({
     brand: { type: Schema.ObjectId, ref: 'Brand', default: null },
     vendor: { type: Schema.ObjectId, ref: 'Vendor', default: null },
     characteristics: { type: Object, default: null },
+    barcode: { type: String, default: null },
+    quantityAvailable: { type: Number, default: 0 },
     thumbnail: { type: Schema.ObjectId, ref: 'Image', default: null },
     pictures: [{ type: Schema.ObjectId, ref: 'Image', default: null }],
     requireInventory: { type: Boolean },
@@ -27,7 +30,6 @@ const ProductSchema = Schema({
     // pricePerStore: { type: Boolean, default: false },
     // pricePerStoresData: [{ type: Schema.ObjectId, ref: 'PricePerStore', default: [] }],
     // tax: { type: Number, default: null },
-    // totalAvailable: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model('Product', ProductSchema);
