@@ -22,6 +22,7 @@ const ProductSchema = Schema({
   requireInventoryByBoxes: { type: Boolean },
   isActive: { type: Boolean },
   isOnlineSale: { type: Boolean },
+  basePrice: { type: Number, default: 0 },
   createdAt: { type: String, default: null },
   updatedAt: { type: String, default: null },
   deletedAt: { type: String, default: null }
