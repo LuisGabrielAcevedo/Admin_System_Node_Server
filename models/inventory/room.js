@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const RoomSchema = Schema({
     name: { type: String, required: true },
     company: { type: Schema.ObjectId, ref: 'Company', required: true },
+    store: { type: Schema.ObjectId, ref: 'Store', require: true },
     type: { type: String, required: true },
     description: { type: String, default: null },
     createdAt: { type: String, default: null },

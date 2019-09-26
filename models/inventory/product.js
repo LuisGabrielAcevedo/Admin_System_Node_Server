@@ -7,6 +7,7 @@ const ProductSchema = Schema({
   stores: [{ type: Schema.ObjectId, ref: "Store", default: [] }],
   description: { type: String, default: null },
   details: { type: String, default: null },
+  prices: [{ type: Schema.ObjectId, ref: "Price", default: [] }],
   unit: { type: String, default: null },
   type: { type: Schema.ObjectId, ref: "ProductType", default: null },
   category: { type: Schema.ObjectId, ref: "ProductCategory", default: null },

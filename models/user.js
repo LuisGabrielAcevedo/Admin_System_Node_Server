@@ -10,7 +10,6 @@ const UserSchema = Schema({
     company: { type: Schema.ObjectId, ref: 'Company', default: null },
     application: { type: Schema.ObjectId, ref: 'Application', default: null },
     userName: { type: String, default: null },
-    token: { type: String, default: null },
     isActive: { type: Boolean, default: true },
     role: { type: Schema.ObjectId, ref: 'Role', default: null },
     userInformation: { type: Schema.ObjectId, ref: 'Information', default: null },
