@@ -16,7 +16,8 @@ const searchBy = {
   brands: () => ["name"],
   productcategories: () => ["name"],
   producttypes: () => ["name"],
-  rooms: () => ["name"]
+  rooms: () => ["name"],
+  products: () => ["name"]
 };
 
 module.exports = {
