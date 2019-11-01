@@ -17,6 +17,7 @@ const ProductSchema = Schema({
   thumbnail: { type: Schema.ObjectId, ref: "Image", default: null },
   pictures: [{ type: Schema.ObjectId, ref: "Image", default: null }],
   quantityAvailable: { type: Number, default: 0 },
+  calification: { type: Number, default: 0 },
   barcode: { type: String, default: null },
   requireInventory: { type: Boolean },
   requireInventoryByBoxes: { type: Boolean },
