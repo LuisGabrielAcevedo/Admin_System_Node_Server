@@ -7,6 +7,7 @@ const InformationSchema = Schema({
   birthdate: { type: String, default: null },
   gender: { type: String, default: null },
   phone: { type: String, default: null },
+  address: { type: Object, default: null },
   createdAt: { type: String, default: null },
   updatedAt: { type: String, default: null },
   deletedAt: { type: String, default: null }
