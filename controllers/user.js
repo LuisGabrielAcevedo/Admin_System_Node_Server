@@ -122,7 +122,7 @@ async function removeUser(req, res) {
   const payload = {
     id: req.params.id,
     collection: User,
-    fileFields: ["profileImage"]
+    fieldToEdits: ["profileImage"]
   };
   try {
     const resp = await dataBase.deleteIdCollection(payload);
@@ -132,7 +132,25 @@ async function removeUser(req, res) {
   }
 }
 
-// 6. Get user images
+// 6. Save user images
+
+async function saveImages(req, res) {
+  try {
+    const payload = {
+      id: req.params.id,
+      files: req.files,
+      collection: User,
+      type: "IMAGE_USER",
+      fieldToEdit: "profileImage"
+    };
+    const resp = await dataBase.saveFiles(payload);
+    return res.status(resp.code).send(resp);
+  } catch (err) {
+    return res.status(err.code).send(err);
+  }
+}
+
+// 7. Get user images
 async function getImage(req, res) {
   const payload = {
     id: req.params.id,
@@ -206,6 +224,7 @@ function userLogin(req, res) {
         const newToken = jwt.sign({ dataBaseResp }, secret, {
           expiresIn: tokenExpired
         });
+
         dataBaseResp.token = newToken;
         return res.status(200).send({
           status: "OK",
@@ -225,5 +244,6 @@ module.exports = {
   updateUser,
   removeUser,
   getImage,
-  userLogin
+  userLogin,
+  saveImages
 };

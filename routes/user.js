@@ -58,18 +58,13 @@ api.delete(
   ]),
   userCtrl.removeUser
 );
-// 6. Get user image
-api.get("/users/image/:id/:file", userCtrl.getImage);
-// 7. Register user
-api.post(
-  "/auth/register",
-  compose([
-    //authMiddleware.authMiddlewareFirstActionFunction,
-    //validationsMiddleware.validationsMiddlewareFunction
-  ]),
-  userCtrl.saveUser
-);
-// 8. Login user
+// 6. Save user images
+api.put("/users/:id/images", userCtrl.saveImages);
+// 7. Get user image
+api.get("/users/:id/image/:file", userCtrl.getImage);
+// 9. Register user
+api.post("/auth/register", userCtrl.saveUser);
+// 9. Login user
 api.post("/auth/login", userCtrl.userLogin);
 
 module.exports = api;
