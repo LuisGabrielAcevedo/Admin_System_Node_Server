@@ -59,10 +59,17 @@ api.delete(
   userCtrl.removeUser
 );
 // 6. Save user images
-api.put("/users/:id/images", userCtrl.saveImages);
+api.put("/users/:id/images", userCtrl.saveUserImages);
 // 7. Get user image
-api.get("/users/:id/image/:file", userCtrl.getImage);
-// 9. Register user
+api.get(
+  "/users/:id/image/:file",
+  compose([
+    authMiddleware.authMiddlewareFirstActionFunction,
+    roleMiddleware.roleMiddlewareFunction
+  ]),
+  userCtrl.getImage
+);
+// 8. Register user
 api.post("/auth/register", userCtrl.saveUser);
 // 9. Login user
 api.post("/auth/login", userCtrl.userLogin);

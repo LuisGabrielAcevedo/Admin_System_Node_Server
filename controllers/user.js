@@ -133,8 +133,7 @@ async function removeUser(req, res) {
 }
 
 // 6. Save user images
-
-async function saveImages(req, res) {
+async function saveUserImages(req, res) {
   try {
     const payload = {
       id: req.params.id,
@@ -245,5 +244,5 @@ module.exports = {
   removeUser,
   getImage,
   userLogin,
-  saveImages
+  saveUserImages
 };

@@ -66,7 +66,7 @@ function validateFile(id, type, file) {
         break;
       case "LOGO_COMPANY":
         pathToSave = `uploads/company/logo`;
-        url = `${config.server.urlApi}companie/${id}s/logo/${fileName}`;
+        url = `${config.server.urlApi}companies/${id}s/logo/${fileName}`;
         break;
       case "IMAGE_PRODUCT":
         pathToSave = `uploads/product`;

@@ -105,6 +105,23 @@ async function findCompany(req, res) {
   }
 }
 
+// 7. Save company images
+async function saveCompanyImages(req, res) {
+  try {
+    const payload = {
+      id: req.params.id,
+      files: req.files,
+      collection: User,
+      type: "IMAGE_COMPANY",
+      fieldToEdit: "profileImage"
+    };
+    const resp = await dataBase.saveFiles(payload);
+    return res.status(resp.code).send(resp);
+  } catch (err) {
+    return res.status(err.code).send(err);
+  }
+}
+
 module.exports = {
   company,
   saveCompany,
@@ -112,5 +129,6 @@ module.exports = {
   removeCompany,
   getCompanies,
   getImage,
-  findCompany
+  findCompany,
+  saveCompanyImages
 };
