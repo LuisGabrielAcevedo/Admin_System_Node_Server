@@ -49,7 +49,7 @@ api.delete(
   companyCtrl.removeCompany
 );
 // 5. Get comany image
-api.get("/companies/image/:id/:file", companyCtrl.getImage);
+api.get("/companies/:id/image/:file", companyCtrl.getImage);
 // 6. Get company
 api.get(
   "/companies/:id",
@@ -60,7 +60,7 @@ api.get(
   ]),
   companyCtrl.findCompany
 );
-// 7. Save user images
+// 7. Save company images
 api.put(
   "/companies/:id/images",
   compose([

@@ -111,7 +111,7 @@ async function saveCompanyImages(req, res) {
     const payload = {
       id: req.params.id,
       files: req.files,
-      collection: User,
+      collection: Company,
       type: "IMAGE_COMPANY",
       fieldToEdit: "profileImage"
     };
